@@ -16,9 +16,9 @@ alpha = 100;
 
 uex = @(x) alpha * (1 - x(1,:)) .* x(1,:).^(1/1) .* (1 - x(2,:)) .* x(2,:) .* sin(1/3 - x(1,:) .* x(2,:).^2);
 
-uexdx = @(x,y) - alpha * x * y * sin(x*y^2 - 1/3) * (y - 1) - ...
-                 alpha * y * sin(x * y^2 - 1/3) * (x - 1) * (y - 1) - ...
-                 alpha * x * y^3 * cos(x *y^2 - 1/3) * (x - 1) * (y - 1);
+uexdx = @(x,y) - alpha * x .* y .* sin(x .* y.^2 - 1/3) .* (y - 1) - ...
+                 alpha * y .* sin(x .* y.^2 - 1/3) .* (x - 1) .* (y - 1) - ...
+                 alpha * x .* y.^3 .* cos(x .* y.^2 - 1/3) .* (x - 1) .* (y - 1);
 uexdy = @(x,y) - alpha * x * y * sin(x*y^2 - 1/3) * (x - 1) - ... 
                  alpha * x * sin(x * y^2 - 1/3) * (x - 1) * (y - 1) - ...
                  2 * alpha * x^2 * y^2 * cos(x * y^2 - 1/3) * (x - 1) * (y - 1);
@@ -36,7 +36,8 @@ funxy = @(x,y) 2 * alpha * x * sin(x * y^2 - 1/3) * (x - 1) + ...
 fun = @(x) funxy(x(1),x(2));
 
 % define diffusivity
-mu = @(x) 1;
+mu_const = 1;
+mu = @(x) mu_const;
 
 % discretization parameters: n_elements in y direction for both
 % subdomains, n_elements/2 elements in x direction for both subdomains
@@ -100,7 +101,6 @@ n2 = size(A2,1);
 
 indices1 = 1:n1;
 indices2 = n1+1:n1+n2;
-
 
 % we start solving the problem with variable number of basis functions
 % defined over the interface
@@ -176,20 +176,20 @@ for i = 1:n_iterations
     % number of lagrange multipliers
     n3 = size(B1,1);
     
+    % build the global matrix (note that Dirichlet boundary conditions are
+    % imposed on A1 and A2 directly in the assembly, and that B1' and B2' 
+    % have 0 value in the rows corresponding to Dirichlet boundaries)
     A = sparse([A1 sparse(n1,n2) -B1'; sparse(n2,n1) A2 B2'; -B1 B2 sparse(n3,n3)]);
     
-    % apply dirichlet_boundary conditions to the first and second block row
-    % of A
-    A(indices1,:) = apply_dirichlet_bc_matrix(A(indices1,:),fespace1,1);
-    A(indices2,n1+1:end) = apply_dirichlet_bc_matrix(A(indices2,n1+1:end),fespace2,1);
+    % build the global right handside
     f = [rhs1;rhs2;zeros(n3,1)];
     
     % solve the linear system A u = f
     sol = A\f;
     
     % divide the solution into left and right solutions
-    sol1 = sol(1:n1);
-    sol2 = sol(n1+1:n1+n2);
+    sol1 = sol(indices1);
+    sol2 = sol(indices2);
     
     % create contour plot
     
@@ -199,12 +199,13 @@ for i = 1:n_iterations
 
     % draw 20 contour levels between the minimum and the maximum values at
     % the degrees of freedom
-    mm = min(min(interpsol1),min(interpsol2));
-    MM = max(max(interpsol1),max(interpsol2));
+    mm = -0.55;
+    MM = 1.66;
     levels = linspace(mm,MM,20);
     
     % plot contours
     figure(i)
+    box
     hold on        
     set(gcf, 'renderer','painters')
     [h1]=plot_solution_on_fespace(finefespace1,interpsol1,'contourf',levels);
@@ -215,13 +216,63 @@ for i = 1:n_iterations
     colorbar()
     caxis([mm MM]);
     axis square
-    ylabel('$y$');
     xlabel('$x$');
+    ylabel('$y$');
     set(gca, 'fontsize',15);  
     
     % set title
     title(['$N_\Gamma$ = ', num2str(1+2*(i-1))]);
     
+    % plot the derivatives at the interface and the lagrange multiplier
+    figure(i+n_iterations)
+    box
+    hold on
+
+    % we compute the derivatives at x = 0.5
+    x0 = 0.5;
+    
+    % epsilon used for the numerical approximation via finite differences
+    % of the derivatives
+    epsil = 1e-9;
+
+    % approximate derivative on the right subdomain
+    [yy,u1] = get_values_over_line(fespace1,sol1,100,x0-epsil,'Ypar');
+    [~ ,u2] = get_values_over_line(fespace1,sol1,100,x0,'Ypar');
+
+    plot(yy,(u2-u1)/epsil,'r')
+    
+    % approximate derivative on the right subdomain
+    [yy,u1] = get_values_over_line(fespace2,sol2,100,x0,'Ypar');
+    [~ ,u2] = get_values_over_line(fespace2,sol2,100,x0+epsil,'Ypar');
+
+    plot(yy,(u2-u1)/epsil,'b')
+
+    % plot the exact derivative 
+    plot(yy,uexdx(x0*yy.^0,yy),'k')
+    
+    % plot the Lagrange multiplier
+    coeffs = sol(n1+n2+1:end);
+    urec = yy*0 + coeffs(1);
+    coeffs = coeffs(2:end);
+
+    for j = 1:freq
+        urec = urec + coeffs(2*j-1)*sin(pi*j*yy)+coeffs(2*j)*cos(pi*j*yy);
+    end
+    plot(yy,urec/mu_const,'color',[0 147 23]/255)
+
+    % set axis and colours
+    axis square
+    axis([0 1 -3 1])
+    xlabel('$y$');
+    ylabel('$\partial y/\partial n$');
+    set(gca, 'fontsize',15); 
+    
+    % set legend
+    legend('Domain 1', 'Domain 2', 'Exact solution', 'Lagrange multiplier');
+    
+    % set title
+    title(['$N_\Gamma$ = ', num2str(1+2*(i-1))]);
+        
 end
 
 
