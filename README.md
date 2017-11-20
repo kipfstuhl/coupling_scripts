@@ -9,4 +9,4 @@ HOW TO CLONE
 
 HOW TO USE
 ---
-The functions of *feamat* must be before hand included by running the run_addpaths.m script in the root of the project. The repository is structured in multiple folders, each containing the scripts for generating the figures of a particular section of the paper. Each script is commented, such that it should be possible to follow the steps without knowledge of the underlying *feamat* functions
+The functions of *feamat* must be beforehand included by running the run_addpaths.m script in the root of the project. The repository is structured in multiple folders, each containing the scripts for generating the figures of a particular section of the paper. Each script is commented, such that it should be possible to follow the steps without knowledge of the underlying *feamat* functions
