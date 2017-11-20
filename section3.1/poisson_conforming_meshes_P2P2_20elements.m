@@ -192,28 +192,35 @@ for i = 1:n_iterations
     sol2 = sol(n1+1:n1+n2);
     
     % create contour plot
-    figure(i)
-    set(gcf, 'renderer','painters')
-        
+    
+    % interpolate on fine finite element spaces
     interpsol1 = interp_on_fespace(fespace1,sol1,finefespace1);
     interpsol2 = interp_on_fespace(fespace2,sol2,finefespace2);
+
+    % draw 20 contour levels between the minimum and the maximum values at
+    % the degrees of freedom
     mm = min(min(interpsol1),min(interpsol2));
     MM = max(max(interpsol1),max(interpsol2));
-
     levels = linspace(mm,MM,20);
-    dtin = abs(mm);
-    aux = mm;
-
-    [h1]=plot_solution_on_fespace(finefespace1,interpsol1,'contourf',levels);
-    hold on        
-    interpsol2 = interp_on_fespace(fespace2,sol2,finefespace2);
-    [h2]=plot_solution_on_fespace(finefespace2,interpsol2,'contourf',levels);
-    axis square
-    caxis([mm MM]);
     
+    % plot contours
+    figure(i)
+    hold on        
+    set(gcf, 'renderer','painters')
+    [h1]=plot_solution_on_fespace(finefespace1,interpsol1,'contourf',levels);
+    [h2]=plot_solution_on_fespace(finefespace2,interpsol2,'contourf',levels);
+    hold off
+    
+    % set axis and colours
+    colorbar()
+    caxis([mm MM]);
+    axis square
     ylabel('$y$');
     xlabel('$x$');
-    set(gca, 'fontsize',15);   
+    set(gca, 'fontsize',15);  
+    
+    % set title
+    title(['$N_\Gamma$ = ', num2str(1+2*(i-1))]);
     
 end
 
