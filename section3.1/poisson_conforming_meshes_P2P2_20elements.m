@@ -1,43 +1,19 @@
 clear all
+close all
 clc
 
 % author: Luca Pegolotti on 20/11/2017
 
-% This script performs the numerical simulations regarding conforming meshes 
-% in Section 3.1. The Poisson problem is solved on two subdomains: (0,0.5)x(0,1) 
+% This script performs the numerical simulations in Section 3 with conforming 
+% meshes. The Poisson problem is solved on two subdomains: (0,0.5)x(0,1) 
 % and (0.5,0)x(0,1). The basis functions on the interface are Fourier basis
 % functions.
 
 % we set the interpreter for strings to latex
 set(0,'defaulttextinterpreter','latex')
 
-% define the exact solution
-alpha = 100;
-
-uex = @(x) alpha * (1 - x(1,:)) .* x(1,:).^(1/1) .* (1 - x(2,:)) .* x(2,:) .* sin(1/3 - x(1,:) .* x(2,:).^2);
-
-uexdx = @(x,y) - alpha * x .* y .* sin(x .* y.^2 - 1/3) .* (y - 1) - ...
-                 alpha * y .* sin(x .* y.^2 - 1/3) .* (x - 1) .* (y - 1) - ...
-                 alpha * x .* y.^3 .* cos(x .* y.^2 - 1/3) .* (x - 1) .* (y - 1);
-uexdy = @(x,y) - alpha * x * y * sin(x*y^2 - 1/3) * (x - 1) - ... 
-                 alpha * x * sin(x * y^2 - 1/3) * (x - 1) * (y - 1) - ...
-                 2 * alpha * x^2 * y^2 * cos(x * y^2 - 1/3) * (x - 1) * (y - 1);
-graduex = @(x) [uexdx(x(1,:),x(2,:));uexdy(x(1,:),x(2,:))];
-
-% define forcing term
-funxy = @(x,y) 2 * alpha * x * sin(x * y^2 - 1/3) * (x - 1) + ... 
-               2 * alpha * y * sin(x * y^2 - 1/3) * (y - 1) + ...
-               2 * alpha * x * y^3 * cos(x * y^2 - 1/3) * (y - 1) + ...
-               4 * alpha * x^2 * y^2 * cos(x * y^2 - 1/3) * (x - 1) + ...
-               2 * alpha * y^3 * cos(x * y^2 - 1/3) * (x - 1) * (y - 1) + ...
-               6 * alpha * x^2 * y * cos(x * y^2 - 1/3) * (x - 1) * (y - 1) - ...
-               alpha * x * y^5 * sin(x*y^2 - 1/3) * (x - 1)*(y - 1) - ...
-               4 * alpha * x^3 * y^3 * sin(x * y^2 - 1/3) * (x - 1) * (y - 1);
-fun = @(x) funxy(x(1),x(2));
-
-% define diffusivity
-mu_const = 1;
-mu = @(x) mu_const;
+% load the exact solution and forcing term
+run load_exact_solution_and_f.m
 
 % discretization parameters: n_elements in y direction for both
 % subdomains, n_elements/2 elements in x direction for both subdomains
