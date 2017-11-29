@@ -25,13 +25,13 @@ h = 1./[20 28 40 56 80 114 160];
 
 % select the ngammas we plot (upper limit is 1 + 2 * 15 = 31, must be odd 
 % number)
-ngamma = [1 3 5 7 13 21 25 31];
+ngamma = [1 3 5 7 13 21 25];
 
 brokenerror_nonconforming = brokenerror_nonconforming((ngamma-1)/2+1,:);
 
 nfreq = size(brokenerror_nonconforming,1);
 
-legend_entries = {}
+legend_entries = {};
 for i = 1:nfreq
     loglog(h,brokenerror_nonconforming(i,:),'.-','Linewidth',1,'Markersize',10)
     hold on

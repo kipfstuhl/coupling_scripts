@@ -28,7 +28,7 @@ brokenerror_nonconforming = [];
 
 % we need high order quadrature for the non-conforming mesh (we invite the
 % user to try with e.g. quadrature_order = 3 or quadrature_order = 5)
-quadrature_order = 3;
+quadrature_order = 7;
 
 for n_elements = N    
     n1x = n_elements/2;

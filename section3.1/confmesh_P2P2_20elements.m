@@ -247,7 +247,8 @@ for i = 1:n_iterations
     legend('Domain 1', 'Domain 2', 'Exact solution', 'Lagrange multiplier');
     
     % set title
-    title(['$N_\Gamma$ = ', num2str(1+2*(i-1))]);      
+    title(['$N_\Gamma$ = ', num2str(1+2*(i-1))]);
+      
 end
 
 

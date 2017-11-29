@@ -32,7 +32,7 @@ brokenerror = brokenerror((ngamma-1)/2+1,:);
 % number of frequencies
 nfreq = size(brokenerror,1);
 
-legend_entries = {}
+legend_entries = {};
 % plot the convergence of the error for each frequency w (meaning, each line
 % represents the convergence of the error obtained by adding Fourier basis
 % functions with frequency lower than w)
