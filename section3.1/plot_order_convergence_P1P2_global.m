@@ -1,10 +1,9 @@
 clc
 
-% author: Luca Pegolotti on 20/11/2017
+% author: Luca Pegolotti on 29/11/2017
 
-% This script plots the convergence order computed by
-% compute_order_convergence_P2P2_confmesh.m and reproduces the plots of
-% Section 3.
+% This script plots the convergence order of the global error computed by
+% compute_order_convergence_P1P2.m 
 
 % we set the interpreter for strings to latex
 set(0,'defaulttextinterpreter','latex')
@@ -14,8 +13,8 @@ if (~exist('data','dir'))
 end
 
 % here we load the errors 
-load('data/globalerror.mat');
-load('data/brokenerror.mat');
+load('data/globalerror_P1_H1.mat');
+load('data/brokenerror_P2P1_H1.mat');
 
 % mesh sizes
 h = 1./[20 28 40 56 80 114 160];
@@ -45,11 +44,11 @@ loglog(h,globalerror,'--k','Linewidth',1)
 legend_entries{end+1} = 'Global solution';
 
 % plot h^2 slope
-h1 = loglog(h,h.^2*7,':k','Linewidth',1)
-legend_entries{end+1} = '$h^2$';
+h1 = loglog(h,h*7,':k','Linewidth',1)
+legend_entries{end+1} = '$h^1$';
 
 % set axis
-axis([h(end)/1.1 h(1)*1.1 2e-4 1])
+axis([h(end)/1.1 h(1)*1.1 3e-2 1])
 axis square
 grid on
 xlabel('$h$');

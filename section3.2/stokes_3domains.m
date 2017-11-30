@@ -15,25 +15,25 @@ set(0,'defaulttextinterpreter','latex')
 % create the mesh and fespaces for domain 1
 xp1 = 0;
 yp1 = 0;
-L1 = 0.5;
+L1 = 0.8;
 H1 = 1;
 
-n1x = 10;
-n1y = 19;
+n1x = 20;
+n1y = 38;
 mesh1 = create_mesh(xp1,yp1,L1,H1,n1x,n1y);
 
-bc_flags = [1 0 1 0];
+bc_flags = [1 0 1 1];
 fespace1_u = create_fespace(mesh1,'P2',bc_flags);
 fespace1_p = create_fespace(mesh1,'P1',bc_flags);
 
 % create the mesh and fespaces for domain 2
-xp2 = 0.5;
+xp2 = 0.8;
 yp2 = 0;
-L2 = 0.5;
+L2 = 0.2;
 H2 = 0.5;
 
-n2x = 13;
-n2y = 10;
+n2x = 26;
+n2y = 20;
 mesh2 = create_mesh(xp2,yp2,L2,H2,n2x,n2y);
 
 bc_flags = [1 1 0 0];
@@ -41,13 +41,13 @@ fespace2_u = create_fespace(mesh2,'P2',bc_flags);
 fespace2_p = create_fespace(mesh2,'P1',bc_flags);
 
 % create the mesh and fespaces for domain 3
-xp3 = 0.5;
+xp3 = 0.8;
 yp3 = 0.5;
-L3 = 0.5;
+L3 = 0.2;
 H3 = 0.5;
 
-n3x = 8;
-n3y = 11;
+n3x = 16;
+n3y = 22;
 mesh3 = create_mesh(xp3,yp3,L3,H3,n3x,n3y);
 
 bc_flags = [0 1 1 0];
@@ -55,10 +55,10 @@ fespace3_u = create_fespace(mesh3,'P2',bc_flags);
 fespace3_p = create_fespace(mesh3,'P1',bc_flags);
 
 % define parameters and boundary conditions
-U = 10;
+U = 1e-5;
 f = @(x) [0;0];
 nu = @(x) 1;
-dirichlet_functions = @(x) [0 0;0 U*(x(1)==1);0*(x(2) == 1) 0;0 0]';
+dirichlet_functions = @(x) [0 0;0 0;0 0;0 U*(x(1)==0)]';
 
 neumann_functions = @(x) [0 0;0 0;0 0;0 0]';
 
@@ -216,28 +216,23 @@ sol2 = sol(n1+1:n1+n2);
 sol3 = sol(n1+n2+1:n1+n2+n3);
 
 figure(1)
-plot_solution_vp(fespace1_u,fespace1_p,sol1,'U',[0 10]);
-caxis([0 10])
+plot_solution_vp(fespace1_u,fespace1_p,sol1,'U',[0 U]);
 hold on
-plot_solution_vp(fespace2_u,fespace2_p,sol2,'U',[0 10]);
-caxis([0 10])
+plot_solution_vp(fespace2_u,fespace2_p,sol2,'U',[0 U]);
 hold on
-plot_solution_vp(fespace3_u,fespace3_p,sol3,'U',[0 10]);
-caxis([0 10])
+plot_solution_vp(fespace3_u,fespace3_p,sol3,'U',[0 U]);
 
 axis([0 1 0 1])
+axis square
 
 title('Non-conforming mesh')
 figure(2)
 
-plot_solution_vp(fespace1_u,fespace1_p,sol1,'U',[0 10]);
-caxis([0 10])
+plot_solution_vp(fespace1_u,fespace1_p,sol1,'U',[0 U]);
 hold on
-plot_solution_vp(fespace2_u,fespace2_p,sol2,'U',[0 10]);
-caxis([0 10])
+plot_solution_vp(fespace2_u,fespace2_p,sol2,'U',[0 U]);
 hold on
-plot_solution_vp(fespace3_u,fespace3_p,sol3,'U',[0 10]);
-caxis([0 10])
+plot_solution_vp(fespace3_u,fespace3_p,sol3,'U',[0 U]);
 
 axis([0 1 0 1])
 hold on
@@ -248,6 +243,7 @@ meshes{end+1} = mesh3;
 draw_multimesh(meshes)
 hold on
 title('Non-conforming mesh')
+axis square
 
 % solve full problem for comparison
 % create the mesh and fespaces for domain 1
@@ -256,14 +252,17 @@ yp = 0;
 L = 1;
 H = 1;
 
-nx = 20;
-ny = 20;
+nx = 160;
+ny = 160;
 mesh = create_mesh(xp,yp,L,H,nx,ny);
-fespace_u = create_fespace(mesh,'P2',[1 1 1 0]);
+fespace_u = create_fespace(mesh,'P2',[1 1 1 1]);
 fespace_p = create_fespace(mesh,'P1',[0 0 0 0]);
 
 [H,b] = assembler_steady_stokes(fespace_u,fespace_p,f,nu,dirichlet_functions,neumann_functions);
 sol = H\b;
 figure(3)
-plot_solution_vp(fespace_u,fespace_p,sol,'U',[0 10]);
+plot_solution_vp(fespace_u,fespace_p,sol,'U',[0 U]);
 title('Full solution with conforming mesh')
+axis([0 1 0 1])
+axis square
+

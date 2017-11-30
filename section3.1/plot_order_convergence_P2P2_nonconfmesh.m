@@ -1,5 +1,3 @@
-clear all
-close all
 clc
 
 % author: Luca Pegolotti on 21/11/2017
@@ -25,7 +23,7 @@ h = 1./[20 28 40 56 80 114 160];
 
 % select the ngammas we plot (upper limit is 1 + 2 * 15 = 31, must be odd 
 % number)
-ngamma = [1 3 5 7 13 21 25];
+run pick_gammas.m
 
 brokenerror_nonconforming = brokenerror_nonconforming((ngamma-1)/2+1,:);
 
@@ -41,7 +39,7 @@ end
 loglog(h,globalerror,'--k','Linewidth',1)
 legend_entries{end+1} = 'Global solution';
 
-loglog(h,h.^2*7,':k','Linewidth',1)
+h2 = loglog(h,h.^2*7,':k','Linewidth',1)
 legend_entries{end+1} = '$h^2$';
 
 axis([h(end)/1.1 h(1)*1.1 2e-4 1])
