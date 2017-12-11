@@ -4,13 +4,11 @@ clc
 
 % author: Luca Pegolotti on 28/11/2017
 
-% This script performs the numerical simulations on the Stokes problem (lid-cavity problem)
-% with non-conforming meshes and a partition of Omega into 3 subdomains
+% This script performs the numerical simulations on the Naviers-Stokes problem 
+% (lid-cavity problem) with non-conforming meshes and a partition of Omega into 5 subdomains
 
 % we set the interpreter for strings to latex
 set(0,'defaulttextinterpreter','latex')
-
-
 
 % create the mesh and fespaces for domain 1
 xp1 = 0;
