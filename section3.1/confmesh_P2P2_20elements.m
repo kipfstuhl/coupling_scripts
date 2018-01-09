@@ -113,7 +113,7 @@ for i = 1:n_iterations
         % compute b1 by applying constant neumann boundary conditions on
         % the right boundary (hence, the second component of the neumann
         % functions is the only non zero component)
-        b1 = apply_neumann_bc(fespace1,b1,@(x) [0;1;0;0]);
+        b1 = apply_neumann_bc(b1,fespace1,@(x) [0;1;0;0]);
         
         % bad practice, but here the number of iterations is small. At each
         % iteration we increase the size of B1 (and B2) by adding the newly
@@ -122,30 +122,30 @@ for i = 1:n_iterations
         
         % compute b2 by applying constant neumann boundary conditions on
         % the left boundary 
-        b2 = apply_neumann_bc(fespace2,b2,@(x) [0;0;0;1]);
+        b2 = apply_neumann_bc(b2,fespace2,@(x) [0;0;0;1]);
         
         B2 = [B2;b2'];
     else
         % here we to the same as for the constant function, but we add the
         % terms corresponding to sin and cos integrals
         
-        b1 = apply_neumann_bc(fespace1,b1,@(x) [0;sin(x(2) * pi * freq);0;0]);
+        b1 = apply_neumann_bc(b1,fespace1,@(x) [0;sin(x(2) * pi * freq);0;0]);
         B1 = [B1;b1'];
         
         % we put b1 to zero again, as apply_neumann_bc adds the condition
         % to the vector passed as argument
         b1 = b1*0; 
         
-        b1 = apply_neumann_bc(fespace1,b1,@(x) [0;cos(x(2) * pi * freq);0;0]);
+        b1 = apply_neumann_bc(b1,fespace1,@(x) [0;cos(x(2) * pi * freq);0;0]);
         B1 = [B1;b1'];
     
         % we do the same for the right subodmain
-        b2 = apply_neumann_bc(fespace2,b2,@(x) [0;0;0;sin(x(2) * pi * freq)]);
+        b2 = apply_neumann_bc(b2,fespace2,@(x) [0;0;0;sin(x(2) * pi * freq)]);
         B2 = [B2;b2'];
         
         b2 = b2*0; 
         
-        b2 = apply_neumann_bc(fespace2,b2,@(x) [0;0;0;cos(x(2) * pi * freq)]);
+        b2 = apply_neumann_bc(b2,fespace2,@(x) [0;0;0;cos(x(2) * pi * freq)]);
         B2 = [B2;b2']; 
     end
     
@@ -184,8 +184,8 @@ for i = 1:n_iterations
     box
     hold on        
     set(gcf, 'renderer','painters')
-    [h1]=plot_solution_on_fespace(finefespace1,interpsol1,'contourf',levels);
-    [h2]=plot_solution_on_fespace(finefespace2,interpsol2,'contourf',levels);
+    [h1]=plot_fe_function(interpsol1,finefespace1,'contourf',levels);
+    [h2]=plot_fe_function(interpsol2,finefespace2,'contourf',levels);
     hold off
     
     % set axis and colours

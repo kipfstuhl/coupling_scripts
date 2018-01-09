@@ -5,10 +5,7 @@ clc
 % author: Luca Pegolotti on 28/11/2017
 
 % This script performs the numerical simulations on the Stokes problem (lid-cavity problem)
-% with non-conforming meshes and a partition of Omega into 3 subdomains
-
-% we set the interpreter for strings to latex
-set(0,'defaulttextinterpreter','latex')
+% with non-conforming meshes and a partition of Omega into 5 subdomains
 
 h_fine = 1/200;
 
@@ -28,7 +25,7 @@ bc_flags = [0 1 1 1];
 fespace1_u = create_fespace(mesh1,'P2',bc_flags);
 fespace1_p = create_fespace(mesh1,'P1',bc_flags);
 
-% create the mesh and fespaces for domain 3
+% create the mesh and fespaces for domain 2
 xp2 = 0.7;
 yp2 = 0;
 L2 = 0.3;
@@ -42,7 +39,7 @@ bc_flags = [1 1 0 0];
 fespace2_u = create_fespace(mesh2,'P2',bc_flags);
 fespace2_p = create_fespace(mesh2,'P1',bc_flags);
 
-% create the mesh and fespaces for domain 5
+% create the mesh and fespaces for domain 3
 xp3 = 0.15;
 yp3 = 0;
 L3 = 0.55;
@@ -56,7 +53,7 @@ bc_flags = [1 0 0 0];
 fespace3_u = create_fespace(mesh3,'P2',bc_flags);
 fespace3_p = create_fespace(mesh3,'P1',bc_flags);
 
-% create the mesh and fespaces for domain 2
+% create the mesh and fespaces for domain 4
 xp4 = 0;
 yp4 = 0;
 L4 = 0.15;
@@ -70,7 +67,7 @@ bc_flags = [1 0 0 1];
 fespace4_u = create_fespace(mesh4,'P2',bc_flags);
 fespace4_p = create_fespace(mesh4,'P1',bc_flags);
 
-% create the mesh and fespaces for domain 4
+% create the mesh and fespaces for domain 5
 xp5 = 0;
 yp5 = 0.15;
 L5 = 0.15;
@@ -94,7 +91,7 @@ meshes{end+1} = mesh5;
 draw_multimesh(meshes)
 %%
 % define parameters and boundary conditions
-U = 200;
+U = 500;
 f = [0;0];
 nu = 1;
 dirichlet_functions = @(x) [0 0;0 0;U*(x(2) == 1) 0;0 0]';
@@ -107,7 +104,6 @@ neumann_functions = @(x) [0 0;0 0;0 0;0 0]';
 [A3,rhs3] = assembler_steady_stokes(fespace3_u,fespace3_p,f,nu,dirichlet_functions,neumann_functions);
 [A4,rhs4] = assembler_steady_stokes(fespace4_u,fespace4_p,f,nu,dirichlet_functions,neumann_functions);
 [A5,rhs5] = assembler_steady_stokes(fespace5_u,fespace5_p,f,nu,dirichlet_functions,neumann_functions);
-
 
 % store number of degrees of freedom for one component the velocity
 n1u = size(fespace1_u.nodes,1);

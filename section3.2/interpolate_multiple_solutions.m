@@ -22,9 +22,9 @@ for i = 1:nx
             curmesh = solutions{k}.fespace_u.mesh;
             if (x >= curmesh.xp && x <= (curmesh.xp + curmesh.L) && ...
                 y >= curmesh.yp && y <= (curmesh.yp + curmesh.H))
-                u1(i,j) = interpolate_in_point(solutions{k}.fespace_u,solutions{k}.u1,x,y);
-                u2(i,j) = interpolate_in_point(solutions{k}.fespace_u,solutions{k}.u2,x,y);
-                p(i,j) = interpolate_in_point(solutions{k}.fespace_p,solutions{k}.p,x,y);
+                u1(i,j) = evaluate_fe_function(solutions{k}.u1,solutions{k}.fespace_u,[x;y]);
+                u2(i,j) = evaluate_fe_function(solutions{k}.u2,solutions{k}.fespace_u,[x;y]);
+                p(i,j) = evaluate_fe_function(solutions{k}.p,solutions{k}.fespace_p,[x;y]);
             end
         end
     end

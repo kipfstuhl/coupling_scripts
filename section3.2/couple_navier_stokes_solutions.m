@@ -1,9 +1,10 @@
-function blocks = couple_navier_stokes_solutions(fespaces_u,fespaces_p, bcs_flags,base_freq,niterations,label,gausspoints)
+function [blocks,blocks_t] = couple_navier_stokes_solutions(fespaces_u,fespaces_p, bcs_flags,base_freq,niterations,label,gausspoints)
 
 
 ncouplings = size(fespaces_u,2);
 
 blocks = {};
+blocks_t = {};
 nnodes_u = zeros(ncouplings,1);
 nnodes_p = zeros(ncouplings,1);
 
@@ -17,6 +18,7 @@ end
 
 for i = 1:ncouplings
     blocks{end+1} = [];
+    blocks_t{end+1} = [];
     nnodes_u(i) = size(fespaces_u{i}.nodes,1);
     nnodes_p(i) = size(fespaces_p{i}.nodes,1);
 end
@@ -39,18 +41,30 @@ for i = 1:niterations
             bsx{j} = apply_neumann_bc(bsx{j},fespaces_u{j},@(x) bcs_flags(:,j),gausspoints);
             blocks{j} = [blocks{j};[bsx{j};bsy{j};bsp{j}]'];
             blocks{j} = [blocks{j};[bsy{j};bsx{j};bsp{j}]'];
+            
+            bsx{j} = apply_dirichlet_bc_rhs(bsx{j},fespaces_u{j},@(x) [0;0;0;0]);
+            blocks_t{j} = [blocks_t{j} [bsx{j};bsy{j};bsp{j}]];
+            blocks_t{j} = [blocks_t{j} [bsy{j};bsx{j};bsp{j}]];
         end
     else
         for j = 1:ncouplings
             bsx{j} = apply_neumann_bc(bsx{j},fespaces_u{j},@(x) bcs_flags(:,j)*sin(x(index_com)*pi*base_freq*freq),gausspoints);
             blocks{j} = [blocks{j};[bsx{j};bsy{j};bsp{j}]'];
             blocks{j} = [blocks{j};[bsy{j};bsx{j};bsp{j}]'];
+            
+            bsx{j} = apply_dirichlet_bc_rhs(bsx{j},fespaces_u{j},@(x) [0;0;0;0]);
+            blocks_t{j} = [blocks_t{j} [bsx{j};bsy{j};bsp{j}]];
+            blocks_t{j} = [blocks_t{j} [bsy{j};bsx{j};bsp{j}]];
 
             bsx{j} = bsx{j}*0;   
          
             bsx{j} = apply_neumann_bc(bsx{j},fespaces_u{j},@(x) bcs_flags(:,j)*cos(x(index_com)*pi*base_freq*freq),gausspoints);
             blocks{j} = [blocks{j};[bsx{j};bsy{j};bsp{j}]'];
             blocks{j} = [blocks{j};[bsy{j};bsx{j};bsp{j}]'];
+            
+            bsx{j} = apply_dirichlet_bc_rhs(bsx{j},fespaces_u{j},@(x) [0;0;0;0]);
+            blocks_t{j} = [blocks_t{j} [bsx{j};bsy{j};bsp{j}]];
+            blocks_t{j} = [blocks_t{j} [bsy{j};bsx{j};bsp{j}]];
         end
     end
 end
