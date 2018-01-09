@@ -28,7 +28,7 @@ brokenerror_nonconforming = [];
 
 % we need high order quadrature for the non-conforming mesh (we invite the
 % user to try with e.g. quadrature_order = 3 or quadrature_order = 5)
-quadrature_order = 7;
+quadrature_points = 4;
 
 for n_elements = N    
     n1x = n_elements/2;
@@ -36,7 +36,7 @@ for n_elements = N
     n1y = n_elements;
     % we make the mesh non-conforming by adding 1 element in the y
     % direction for the right subdomain
-    n2y = n_elements + 1;
+    n2y = floor(n_elements*2);
     
     xp1 = 0;
     yp1 = 0;
@@ -85,32 +85,32 @@ for n_elements = N
         freq = i - 1;
 
         if (i == 1)
-            b1 = apply_neumann_bc(fespace1,b1,@(x) [0;1;0;0]);
+            b1 = apply_neumann_bc(b1,fespace1,@(x) [0;1;0;0]);
             
             B1 = [B1;b1'];
             
-            b2 = apply_neumann_bc(fespace2,b2,@(x) [0;0;0;1]);
+            b2 = apply_neumann_bc(b2,fespace2,@(x) [0;0;0;1]);
             
             B2 = [B2;b2'];
         else
-            b1 = apply_neumann_bc(fespace1,b1,@(x) [0;sin(x(2) * pi * freq);0;0],quadrature_order);
+            b1 = apply_neumann_bc(b1,fespace1,@(x) [0;sin(x(2) * pi * freq);0;0],quadrature_points);
             B1 = [B1;b1'];
             
             b1 = b1*0;
             
-            b1 = apply_neumann_bc(fespace1,b1,@(x) [0;cos(x(2) * pi * freq);0;0],quadrature_order);
+            b1 = apply_neumann_bc(b1,fespace1,@(x) [0;cos(x(2) * pi * freq);0;0],quadrature_points);
             B1 = [B1;b1'];
             
-            b2 = apply_neumann_bc(fespace2,b2,@(x) [0;0;0;sin(x(2) * pi * freq)],quadrature_order);
+            b2 = apply_neumann_bc(b2,fespace2,@(x) [0;0;0;sin(x(2) * pi * freq)],quadrature_points);
             B2 = [B2;b2'];
             
             b2 = b2*0;
             
-            b2 = apply_neumann_bc(fespace2,b2,@(x) [0;0;0;cos(x(2) * pi * freq)],quadrature_order);
+            b2 = apply_neumann_bc(b2,fespace2,@(x) [0;0;0;cos(x(2) * pi * freq)],quadrature_points);
             B2 = [B2;b2'];
         end        
         n3 = size(B1,1);
-        
+                
         A = sparse([A1 sparse(n1,n2) -B1'; sparse(n2,n1) A2 B2'; -B1 B2 sparse(n3,n3)]);
         
         f = [rhs1;rhs2;zeros(n3,1)];
@@ -120,8 +120,8 @@ for n_elements = N
         sol1 = sol(indices1);
         sol2 = sol(indices2);
         
-        err1 = compute_error(fespace1,sol1,uex,graduex,typerror);
-        err2 = compute_error(fespace2,sol2,uex,graduex,typerror);
+        err1 = compute_H1_error(fespace1,sol1,uex,graduex);
+        err2 = compute_H1_error(fespace2,sol2,uex,graduex);
         err = sqrt(err1^2+err2^2);
         
         disp(['Total ', typerror ' error = ', num2str(err)]);
