@@ -150,7 +150,7 @@ errH1u = [];
 errL2p = [];
 err = [];
 
-xline = 0.5;
+xline = 0.7;
 yline = 0.5;
 
 for nx = n_elementsx
