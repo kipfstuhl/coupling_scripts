@@ -2,159 +2,29 @@ clear all
 close all
 clc
 
-% author: Luca Pegolotti on 11/12/2017
+% author: Luca Pegolotti on 10/01/2018
 
-set = 3;
+nu = 1;
 
-if (set == 1)
-    U = 1;
-    u1ex = @(x) U*sin(x(2,:)*pi);
-    u2ex = @(x) 0*x(2,:).^0;
-    pex = @(x) -pi^2*U*sin(x(2,:)*pi).*x(1,:);
-    
-    u1exdx = @(x) 0*x(2,:).^0;
-    u1exdy = @(x) pi*U*cos(x(2,:)*pi);
-    u1exdxdx = @(x) 0*x(2,:).^0;
-    u1exdydy = @(x) -pi^2*U*sin(x(2,:)*pi);
-    
-    u2exdx = @(x) 0*x(2,:).^0;
-    u2exdy = @(x) 0*x(2,:).^0;
-    u2exdxdx = @(x) 0*x(2,:).^0;
-    u2exdydy = @(x) 0*x(2,:).^0;
-    
-    graduex = @(x) [u1exdx(x) u1exdy(x);u2exdx(x) u2exdy(x)];
-    
-    pexdx = @(x)  -pi^2*U*sin(x(2,:)*pi);
-    pexdy = @(x)  -pi^3*U*cos(x(2,:)*pi).*x(1,:);
-    
-    mu = 1;
-    nu = mu;
-    fun = @(x) [-mu*(u1exdxdx(x)+u1exdydy(x)) + u1ex(x).*u1exdx(x) + u2ex(x).*u1exdy(x) + pexdx(x);
-        -mu*(u2exdxdx(x)+u2exdydy(x)) + u1ex(x).*u2exdx(x) + u2ex(x).*u2exdy(x) + pexdy(x)];
-    
-    dirichlet_functions = @(x) [u1ex(x).*(x(2,:)==0) u2ex(x).*(x(2,:)==0);
-        u1ex(x).*(x(1,:)==1) u2ex(x).*(x(1,:)==1);
-        u1ex(x).*(x(2,:)==1) u2ex(x).*(x(2,:)==1);
-        u1ex(x).*(x(1,:)==0) u2ex(x).*(x(1,:)==0)]';
-    neumann_functions = @(x) [(mu*graduex(x)*[0;-1]-pex(x)*[0;-1]).*(x(2,:)==0), ...
-        (mu*graduex(x).*[1;0]-pex(x)*[1;0]).*(x(1,:)==1), ...
-        (mu*graduex(x).*[0;1]-pex(x)*[0;1]).*(x(2,:)==1), ...
-        (mu*graduex(x).*[-1;0]-pex(x)*[-1;0]).*(x(1,:)==0)];
-elseif (set == 2)
-    U = 1;
-    u1ex = @(x) 0*x(2,:).^0;
-    u2ex = @(x) U*sin(x(1,:)*pi);
-    pex = @(x) -pi^2*U*sin(x(1,:)*pi).*x(2,:);
-    
-    u1exdx = @(x) 0*x(2,:).^0;
-    u1exdy = @(x) 0*x(2,:).^0;
-    u1exdxdx = @(x) 0*x(2,:).^0;
-    u1exdydy = @(x) 0*x(2,:).^0;
-    
-    u2exdx = @(x) pi*U*cos(x(1,:)*pi);
-    u2exdy = @(x) 0*x(2,:).^0;
-    u2exdxdx = @(x) -pi^2*U*sin(x(1,:)*pi);
-    u2exdydy = @(x) 0*x(2,:).^0;
-    
-    graduex = @(x) [u1exdx(x) u1exdy(x);u2exdx(x) u2exdy(x)];
-    
-    pexdx = @(x)  -pi^3*U*cos(x(1,:)*pi).*x(2,:);
-    pexdy = @(x)  -pi^2*U*sin(x(1,:)*pi);
-    
-    mu = 1;
-    nu = mu;
-    fun = @(x) [-mu*(u1exdxdx(x)+u1exdydy(x)) + u1ex(x).*u1exdx(x) + u2ex(x).*u1exdy(x) + pexdx(x);
-        -mu*(u2exdxdx(x)+u2exdydy(x)) + u1ex(x).*u2exdx(x) + u2ex(x).*u2exdy(x) + pexdy(x)];
-    
-    dirichlet_functions = @(x) [u1ex(x).*(x(2,:)==0) u2ex(x).*(x(2,:)==0);
-        u1ex(x).*(x(1,:)==1) u2ex(x).*(x(1,:)==1);
-        u1ex(x).*(x(2,:)==1) u2ex(x).*(x(2,:)==1);
-        u1ex(x).*(x(1,:)==0) u2ex(x).*(x(1,:)==0)]';
-    neumann_functions = @(x) [(mu*graduex(x)*[0;-1]-pex(x)*[0;-1])*(x(2,:)==0), ...
-        (mu*graduex(x)*[1;0]-pex(x)*[1;0])*(x(1,:)==1), ...
-        (mu*graduex(x)*[0;1]-pex(x)*[0;1])*(x(2,:)==1), ...
-        (mu*graduex(x)*[-1;0]-pex(x)*[-1;0])*(x(1,:)==0)];
-elseif (set == 3)
-    u1ex = @(x) sin(x(2,:)*pi);
-    u2ex = @(x) exp(x(1,:));
-    pex = @(x) -0.5*x(1,:).^2;
-    
-    u1exdx = @(x) 0;
-    u1exdy = @(x) pi*cos(x(2,:)*pi);
-    u1exdxdx = @(x) 0;
-    u1exdydy = @(x) -pi^2*sin(x(2,:)*pi);
-    
-    u2exdx = @(x) exp(x(1,:));
-    u2exdy = @(x) 0;
-    u2exdxdx = @(x) exp(x(1,:));
-    u2exdydy = @(x) 0;
-    
-    graduex = @(x) [u1exdx(x) u1exdy(x);u2exdx(x) u2exdy(x)];
-    
-    pexdx = @(x) -x(1,:);
-    pexdy = @(x) 0;
-    
-    mu = 1;
-    nu = mu;
-    fun = @(x) [-mu*(u1exdxdx(x)+u1exdydy(x)) + u1ex(x).*u1exdx(x) + u2ex(x).*u1exdy(x) + pexdx(x);
-        -mu*(u2exdxdx(x)+u2exdydy(x)) + u1ex(x).*u2exdx(x) + u2ex(x).*u2exdy(x) + pexdy(x)];
-    
-    dirichlet_functions = @(x) [u1ex(x).*(x(2,:)==0) u2ex(x).*(x(2,:)==0);
-        u1ex(x).*(x(1,:)==1) u2ex(x).*(x(1,:)==1);
-        u1ex(x).*(x(2,:)==1) u2ex(x).*(x(2,:)==1);
-        u1ex(x).*(x(1,:)==0) u2ex(x).*(x(1,:)==0)]';
-    neumann_functions = @(x) [(mu*graduex(x)*[0;-1]-pex(x)*[0;-1])*(x(2,:)==0), ...
-        (mu*graduex(x)*[1;0]-pex(x)*[1;0])*(x(1,:)==1), ...
-        (mu*graduex(x)*[0;1]-pex(x)*[0;1])*(x(2,:)==1), ...
-        (mu*graduex(x)*[-1;0]-pex(x)*[-1;0])*(x(1,:)==0)];
-    
-elseif (set == 4)
-    U = 1;
-    u1ex = @(x) U*sin(x(2,:)*pi);
-    u2ex = @(x) U*sin(x(1,:)*pi);
-    pex = @(x) -pi^2*U*sin(x(2,:)*pi).*x(1,:)-pi^2*U*sin(x(1,:)*pi).*x(2,:);
-    
-    u1exdx = @(x) 0*x(2,:).^0;
-    u1exdy = @(x) pi*U*cos(x(2,:)*pi);
-    u1exdxdx = @(x) 0*x(2,:).^0;
-    u1exdydy = @(x) -pi^2*U*sin(x(2,:)*pi);
-    
-    u2exdx = @(x) pi*U*cos(x(1,:)*pi);
-    u2exdy = @(x) 0*x(2,:).^0;
-    u2exdxdx = @(x) -pi^2*U*sin(x(1,:)*pi);
-    u2exdydy = @(x) 0*x(2,:).^0;
-    
-    graduex = @(x) [u1exdx(x) u1exdy(x);u2exdx(x) u2exdy(x)];
-    
-    pexdx = @(x)  -pi^2*U*sin(x(2,:)*pi)-pi^3*U*cos(x(1,:)*pi).*x(2,:);
-    pexdy = @(x)  -pi^3*U*cos(x(2,:)*pi).*x(1,:)-pi^2*U*sin(x(1,:)*pi);
-    
-    mu = 1;
-    nu = mu;
-    fun = @(x) [-mu*(u1exdxdx(x)+u1exdydy(x)) + u1ex(x).*u1exdx(x) + u2ex(x).*u1exdy(x) + pexdx(x);
-                -mu*(u2exdxdx(x)+u2exdydy(x)) + u1ex(x).*u2exdx(x) + u2ex(x).*u2exdy(x) + pexdy(x)];
-    
-    dirichlet_functions = @(x) [u1ex(x).*(x(2,:)==0) u2ex(x).*(x(2,:)==0);
-        u1ex(x).*(x(1,:)==1) u2ex(x).*(x(1,:)==1);
-        u1ex(x).*(x(2,:)==1) u2ex(x).*(x(2,:)==1);
-        u1ex(x).*(x(1,:)==0) u2ex(x).*(x(1,:)==0)]';
-    neumann_functions = @(x) [(mu*graduex(x)*[0;-1]-pex(x)*[0;-1]).*(x(2,:)==0), ...
-        (mu*graduex(x)*[1;0]-pex(x)*[1;0]).*(x(1,:)==1), ...
-        (mu*graduex(x)*[0;1]-pex(x)*[0;1]).*(x(2,:)==1), ...
-        (mu*graduex(x)*[-1;0]-pex(x)*[-1;0]).*(x(1,:)==0)];
-end
-n_elementsx = [16 32 64 128];%128];
+fun = @(x) [0*x(1,:);0*x(2,:)];
+
+U = 100;
+
+dirichlet_functions = @(x) [0 0;0 0;U*(x(2,:) == 1) 0;0 0]';
+neumann_functions = @(x) [0 0;0 0;0 0;0 0]';
+
+n_elementsx = [32];%128];
 
 h = 1./n_elementsx;
 errH1u = [];
 errL2p = [];
 err = [];
 
-xline1 = 0.3;
-yline1 = 0.2;
+xline1 = 0.1;
+yline1 = 0.1;
 
-xline2 = 0.6;
-yline2 = 0.4;
+xline2 = 0.85;
+yline2 = 0.15;
 
 for nx = n_elementsx
     % create the mesh and fespaces for domain 1
@@ -169,7 +39,7 @@ for nx = n_elementsx
     
     h_coarse = L1/n1x;
     
-    bc_flags = [0 0 1 1];
+    bc_flags = [0 1 1 1];
     fespace1_u = create_fespace(mesh1,'P2',bc_flags);
     fespace1_p = create_fespace(mesh1,'P1',bc_flags);
     
@@ -179,11 +49,11 @@ for nx = n_elementsx
     L2 = 1-xline2;
     H2 = yline2;
     
-    n2x = nx/2;
-    n2y = nx/2;
+    n2x = floor(L2*300);
+    n2y = floor(H2*300);
     mesh2 = create_mesh(xp2,yp2,L2,H2,n2x,n2y);
     
-    bc_flags = [1 0 0 0];
+    bc_flags = [1 1 0 0];
     fespace2_u = create_fespace(mesh2,'P2',bc_flags);
     fespace2_p = create_fespace(mesh2,'P1',bc_flags);
     
@@ -193,8 +63,8 @@ for nx = n_elementsx
     L3 = 1-xline1-L2;
     H3 = yline2;
     
-    n3x = nx/2;
-    n3y = floor(nx/2*0.9);
+    n3x = floor(n1x*1.5*L3);
+    n3y = floor(n1y*1.5*H3);
     mesh3 = create_mesh(xp3,yp3,L3,H3,n3x,n3y);
     
     bc_flags = [1 0 0 0];
@@ -207,8 +77,8 @@ for nx = n_elementsx
     L4 = xline1;
     H4 = yline1;
     
-    n4x = floor(nx/2*0.9);
-    n4y = nx/2;
+    n4x = floor(L4*300);
+    n4y = floor(H4*300);
     mesh4 = create_mesh(xp4,yp4,L4,H4,n4x,n4y);
     
     bc_flags = [1 0 0 1];
@@ -221,8 +91,8 @@ for nx = n_elementsx
     L5 = xline1;
     H5 = 1-yline1-H1;
     
-    n5x = nx/2;
-    n5y = nx/2;
+    n5x = floor(L5/h_coarse*1.5);
+    n5y = floor(H5/h_coarse*1.5);
     mesh5 = create_mesh(xp5,yp5,L5,H5,n5x,n5y);
     
     bc_flags = [0 0 0 1];
@@ -287,7 +157,7 @@ for nx = n_elementsx
     
     gausspoints = 4;
     
-    for n_itx = 0:10
+    for n_itx = 0:6
         %bf = @(x) legendreP(n_itx,(x(1)-0.5)*2);
         bf = @(x) x(1,:).^(n_itx);
 
@@ -304,7 +174,7 @@ for nx = n_elementsx
 %         end
     end
     
-    for n_ity = 0:10
+    for n_ity = 0:6
         %bf = @(x) legendreP(n_ity,(x(2)-0.5)*2);
         bf = @(x) x(2,:).^(n_ity);
         %bf = @(x) cos(x(2)*pi*n_ity);
@@ -322,7 +192,7 @@ for nx = n_elementsx
     
     bcs_flags = [0 0 0 0; 0 0 0 0; 0 0 0 1;0 -1 1 0;-1 -1 0 0]';
 
-    for n_itx = 0:10
+    for n_itx = 0:6
         %bf = @(x) legendreP(n_itx,(x(1)-0.5)*2);
         bf = @(x) x(1,:).^(n_itx);
 
@@ -339,7 +209,7 @@ for nx = n_elementsx
 %         end
     end
     
-    for n_ity = 0:10
+    for n_ity = 0:6
         %bf = @(x) legendreP(n_ity,(x(2)-0.5)*2);
         bf = @(x) x(2,:).^(n_ity);
         %bf = @(x) cos(x(2)*pi*n_ity);
@@ -421,41 +291,47 @@ for nx = n_elementsx
     plot_fe_fluid_function(solstr3,'U');
     plot_fe_fluid_function(solstr4,'U');
     plot_fe_fluid_function(solstr5,'U');
+    
+    export_vtk_fluid(solstr1,'omega1','U');
+    export_vtk_fluid(solstr2,'omega2','U');
+    export_vtk_fluid(solstr3,'omega3','U');
+    export_vtk_fluid(solstr4,'omega4','U');
+    export_vtk_fluid(solstr5,'omega5','U');
 
     axis([0 1 0 1])
     pause(0.01)
     hold off
    
     
-    err1 = compute_H1_error_velocity(fespace1_u,solstr1,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
-        u2exdx(x) u2exdy(x)]);
-    err2 = compute_H1_error_velocity(fespace2_u,solstr2,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
-        u2exdx(x) u2exdy(x)]);
-    err3 = compute_H1_error_velocity(fespace3_u,solstr3,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
-        u2exdx(x) u2exdy(x)]);
-    err4 = compute_H1_error_velocity(fespace4_u,solstr4,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
-        u2exdx(x) u2exdy(x)]);    
-    err5 = compute_H1_error_velocity(fespace5_u,solstr5,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
-        u2exdx(x) u2exdy(x)]);
-    
-    err1p = compute_L2_error(fespace1_p,solstr1.p,pex);
-    err2p = compute_L2_error(fespace2_p,solstr2.p,pex);
-    err3p = compute_L2_error(fespace3_p,solstr3.p,pex);
-    err4p = compute_L2_error(fespace4_p,solstr4.p,pex);
-    err5p = compute_L2_error(fespace5_p,solstr5.p,pex);
-      
-    errsH1u = sqrt(err1^2+err2^2+err3^2+err4^2+err5^2);
-    errsL2p = sqrt(err1p^2+err2p^2+err3p^2+err4p^2+err5p^2);
-    
-    err1 = err1 + err1p;
-    err2 = err2 + err2p;
-    err3 = err3 + err3p;
-    err4 = err4 + err4p;
-    err5 = err5 + err5p;
-
-    errH1u = [errH1u;errsH1u]
-    errL2p = [errL2p;errsL2p]
-    err = [err; sqrt(err1^2 + err2^2 + err3^2 + err4^2 + err5^2)]
+%     err1 = compute_H1_error_velocity(fespace1_u,solstr1,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
+%         u2exdx(x) u2exdy(x)]);
+%     err2 = compute_H1_error_velocity(fespace2_u,solstr2,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
+%         u2exdx(x) u2exdy(x)]);
+%     err3 = compute_H1_error_velocity(fespace3_u,solstr3,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
+%         u2exdx(x) u2exdy(x)]);
+%     err4 = compute_H1_error_velocity(fespace4_u,solstr4,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
+%         u2exdx(x) u2exdy(x)]);    
+%     err5 = compute_H1_error_velocity(fespace5_u,solstr5,@(x) [u1ex(x);u2ex(x)],@(x) [u1exdx(x) u1exdy(x); ...
+%         u2exdx(x) u2exdy(x)]);
+%     
+%     err1p = compute_L2_error(fespace1_p,solstr1.p,pex);
+%     err2p = compute_L2_error(fespace2_p,solstr2.p,pex);
+%     err3p = compute_L2_error(fespace3_p,solstr3.p,pex);
+%     err4p = compute_L2_error(fespace4_p,solstr4.p,pex);
+%     err5p = compute_L2_error(fespace5_p,solstr5.p,pex);
+%       
+%     errsH1u = sqrt(err1^2+err2^2+err3^2+err4^2+err5^2);
+%     errsL2p = sqrt(err1p^2+err2p^2+err3p^2+err4p^2+err5p^2);
+%     
+%     err1 = err1 + err1p;
+%     err2 = err2 + err2p;
+%     err3 = err3 + err3p;
+%     err4 = err4 + err4p;
+%     err5 = err5 + err5p;
+% 
+%     errH1u = [errH1u;errsH1u]
+%     errL2p = [errL2p;errsL2p]
+%     err = [err; sqrt(err1^2 + err2^2 + err3^2 + err4^2 + err5^2)]
 end
 
 % loglog(h,errL2u)
