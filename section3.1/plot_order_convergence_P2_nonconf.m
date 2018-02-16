@@ -16,7 +16,7 @@ end
 
 % here we load the errors 
 load(['data/globalerror.mat']);
-load(['data/error_P2_',errortype,'.mat']);
+load(['data/error_P2_',errortype,'_nonconf.mat']);
 
 % mesh sizes
 h = 1./[20 28 40 56 80 114 160];

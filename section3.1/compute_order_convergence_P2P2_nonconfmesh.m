@@ -36,7 +36,7 @@ for n_elements = N
     n1y = n_elements;
     % we make the mesh non-conforming by adding 1 element in the y
     % direction for the right subdomain
-    n2y = floor(n_elements*2);
+    n2y = floor(n_elements+1);
     
     xp1 = 0;
     yp1 = 0;
