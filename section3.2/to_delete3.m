@@ -1,7 +1,6 @@
 clear all
 close all
 clc
-
 % author: Luca Pegolotti on 10/01/2018
 
 exsolstr = load('data/exact_solution.mat');
@@ -17,28 +16,27 @@ U = 500;
 dirichlet_functions = @(x) [0 0;0 0;U 0;0 0]';
 neumann_functions = @(x) [0 0;0 0;0 0;0 0]';
 
-n_elementsx = [23 32 45 64];
+n_elementsx = [16 32 64 128];%128];
+%n_elementsx = 128;
+
 
 h = 1./n_elementsx;
-errH1u = [];
-errL2p = [];
 
-xline1 = 0.15;
-yline1 = 0.15;
+xline1 = 0.25;
+yline1 = 0.25;
 
-xline2 = 0.7;
-yline2 = 0.35;
+xline2 = 0.5;
+yline2 = 0.5;
 
 for nx = n_elementsx
     % create the mesh and fespaces for domain 1
-    clear sol;
     xp1 = 0;
     yp1 = yline2;
     L1 = 1;
     H1 = 1-yline2;
     
     n1x = nx;
-    n1y = round(n1x*H1);
+    n1y = floor(n1x*H1);
     mesh1 = create_mesh(xp1,yp1,L1,H1,n1x,n1y);
     
     h_coarse = L1/n1x;
@@ -53,8 +51,8 @@ for nx = n_elementsx
     L2 = 1-xline2;
     H2 = yline2;
     
-    n2x = round(L2/h_coarse*2);
-    n2y = round(H2/h_coarse*2);
+    n2x = nx/2;
+    n2y = nx/2;
     mesh2 = create_mesh(xp2,yp2,L2,H2,n2x,n2y);
     
     bc_flags = [1 1 0 0];
@@ -67,8 +65,8 @@ for nx = n_elementsx
     L3 = 1-xline1-L2;
     H3 = yline2;
     
-    n3x = ceil(L3/h_coarse);
-    n3y = ceil(H3/h_coarse);
+    n3x = nx/4;
+    n3y = floor(nx/2);
     mesh3 = create_mesh(xp3,yp3,L3,H3,n3x,n3y);
     
     bc_flags = [1 0 0 0];
@@ -81,8 +79,8 @@ for nx = n_elementsx
     L4 = xline1;
     H4 = yline1;
     
-    n4x = round(L4/h_coarse*2);
-    n4y = round(H4/h_coarse*2);
+    n4x = floor(nx/4);
+    n4y = floor(nx/4);
     mesh4 = create_mesh(xp4,yp4,L4,H4,n4x,n4y);
     
     bc_flags = [1 0 0 1];
@@ -95,33 +93,42 @@ for nx = n_elementsx
     L5 = xline1;
     H5 = 1-yline1-H1;
     
-    n5x = ceil(L5/h_coarse);
-    n5y = ceil(H5/h_coarse);
+    n5x = nx/4;
+    n5y = nx/4;
     mesh5 = create_mesh(xp5,yp5,L5,H5,n5x,n5y);
     
     bc_flags = [0 0 0 1];
     fespace5_u = create_fespace(mesh5,'P2',bc_flags);
     fespace5_p = create_fespace(mesh5,'P1',bc_flags);
     
+%     draw_multimesh({mesh1, mesh2, mesh3, mesh4, mesh5})
+%     pause();
+
+    clear sol;
+
     fespaces_u = {fespace1_u,fespace2_u,fespace3_u,fespace4_u,fespace5_u};
     fespaces_p = {fespace1_p,fespace2_p,fespace3_p,fespace4_p,fespace5_p};
-
+    
     domain_connectivity = [1 3 3 0 3; 0 4 2 0 0; 0 0 4 2 2; 0 0 0 3 1];
     normals = [-1 0 0 0; 0 0 1 1; 0 -1 1 -1; 0 1 -1 0; 1 1 1 0];
-    gausspoints = 4;
-    typebasisfunctions = 'polynomial';
-    for bf = 1:11
+    gausspoints = 8;
+    typebasisfunctions = 'fourier';
+    for bf = 1:1
         display(['bf = ', num2str(bf)])
-        nbasisfunctions = [1 1 1 1]*bf;
+%         nbasisfunctions = [6 5 5 4]*bf;
+        nbasisfunctions = [11 5 5 4];
         [mat,rhs,jac,nsys,nus,nps,indices] = build_coupled_system_navier_stokes(fespaces_u,fespaces_p,fun,nu,dirichlet_functions,neumann_functions,domain_connectivity,normals,nbasisfunctions,gausspoints,typebasisfunctions);
+        
+        % 3803
+        display(['Size of the system is ', num2str(nsys)])
 
         % manually put a 1 on the diagonal corresponding to the degrees of
         % freedom of pressure in the bottom-left corner (corresponding to
         % domain 4)
         indices4 = indices{4};
         indexpressure = indices4(1) + 2*nus(4);
-        mat = @(u) diagonalize_manually(mat(u),indexpressure);
-        jac = @(u) diagonalize_manually(jac(u),indexpressure);
+%         mat = @(u) diagonalize_manually(mat(u),indexpressure,1);
+%         jac = @(u) diagonalize_manually(jac(u),indexpressure,1);
 
         % solve system with newton's method
         f = @(u) mat(u)*u-rhs;
@@ -147,16 +154,39 @@ for nx = n_elementsx
             x0 = zeros(nsys,1);
         end
         tol = 1e-8;
-        maxit = 20;
+        maxit = 20; 
 
         [sol,er,it] = solve_with_newtons_method(f,x0,jac,tol,maxit);
+
     end
     
     [sols,lm] = split_solutions(sol,fespaces_u,fespaces_p,nus,nps,indices);
     
     intsol = interpolate_multiple_solutions(sols,exsol.fespace_u,exsol.fespace_p);
+    sol1 = sols{1};
+    sol2 = sols{2};
+    sol4 = sols{4};
     
-    save(['data/ntsol',num2str(nx),'.mat'],'intsol')
+    for i = 1:5
+        plot_fe_fluid_function(sols{i},'U',[0 U]);
+        hold on
+    end
+    axis([0 1 0 1])
+    axis square
+    hold off
+    pause(0.1)
+    
+    disp('=====================')
+    disp(['nx = ',num2str(nx)])
+    disp(['dofs vel = ',num2str(2*sum(nus))])
+    disp(['dofs p = ',num2str(sum(nps))])
+    disp(['lm = ',num2str(nsys-2*sum(nus)-sum(nps))])
+
+%     save(['data/intsol_n',num2str(nx),'.mat'],'intsol')
+%     save(['data/intsoldom1_n',num2str(nx),'.mat'],'sol1')
+%     save(['data/intsoldom2_n',num2str(nx),'.mat'],'sol2')
+%     save(['data/intsoldom4_n',num2str(nx),'.mat'],'sol4')
+%     save(['data/nsys',num2str(nx),'.mat'],'nsys')
 end
 
 % close all
@@ -169,7 +199,7 @@ hold on
 expo = 2;
 loglog(h,h.^(expo)*min(err(1))/(h(1)^(expo)))
 
-function mat = diagonalize_manually(mat,row)
+function mat = diagonalize_manually(mat,row,diagval)
     mat(row,:) = 0;
-    mat(row,row) = 1;
+    mat(row,row) = diagval;
 end

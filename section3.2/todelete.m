@@ -1,7 +1,6 @@
 clear all
 close all
 clc
-
 % author: Luca Pegolotti on 10/01/2018
 
 exsolstr = load('data/exact_solution.mat');
@@ -17,7 +16,8 @@ U = 500;
 dirichlet_functions = @(x) [0 0;0 0;U 0;0 0]';
 neumann_functions = @(x) [0 0;0 0;0 0;0 0]';
 
-n_elementsx = [23 32 45 64];
+n_elementsx = [16 23 32 45 64];
+n_elementsx = [16 32 64 128];
 
 h = 1./n_elementsx;
 errH1u = [];
@@ -108,12 +108,17 @@ for nx = n_elementsx
 
     domain_connectivity = [1 3 3 0 3; 0 4 2 0 0; 0 0 4 2 2; 0 0 0 3 1];
     normals = [-1 0 0 0; 0 0 1 1; 0 -1 1 -1; 0 1 -1 0; 1 1 1 0];
-    gausspoints = 4;
-    typebasisfunctions = 'polynomial';
-    for bf = 1:11
+    gausspoints = 8;
+    typebasisfunctions = 'fourier';
+    for bf = 1:1
         display(['bf = ', num2str(bf)])
-        nbasisfunctions = [1 1 1 1]*bf;
+%         nbasisfunctions = [6 5 5 4]*bf;
+%        nbasisfunctions = [11 5 5 4];
+        nbasisfunctions = [11 5 5 4];
         [mat,rhs,jac,nsys,nus,nps,indices] = build_coupled_system_navier_stokes(fespaces_u,fespaces_p,fun,nu,dirichlet_functions,neumann_functions,domain_connectivity,normals,nbasisfunctions,gausspoints,typebasisfunctions);
+        
+        % 3803
+        display(['Size of the system is ', num2str(nsys)])
 
         % manually put a 1 on the diagonal corresponding to the degrees of
         % freedom of pressure in the bottom-left corner (corresponding to
@@ -147,16 +152,42 @@ for nx = n_elementsx
             x0 = zeros(nsys,1);
         end
         tol = 1e-8;
-        maxit = 20;
+        maxit = 20; 
 
         [sol,er,it] = solve_with_newtons_method(f,x0,jac,tol,maxit);
+
     end
     
     [sols,lm] = split_solutions(sol,fespaces_u,fespaces_p,nus,nps,indices);
     
     intsol = interpolate_multiple_solutions(sols,exsol.fespace_u,exsol.fespace_p);
+    sol1 = sols{1};
+    sol2 = sols{2};
+    sol4 = sols{4};
     
-    save(['data/ntsol',num2str(nx),'.mat'],'intsol')
+%     for i = 1:5
+%         plot_fe_fluid_function(sols{i},'U',[0 U]);
+%         hold on
+%     end
+    axis([0 1 0 1])
+    axis square
+    hold off
+    pause(0.1)
+    
+        
+    disp('=====================')
+    disp(['nx = ',num2str(nx)])
+    disp(['dofs vel = ',num2str(2*sum(nus))])
+    disp(['dofs p = ',num2str(sum(nps))])
+    disp(['lm = ',num2str(nsys-2*sum(nus)-sum(nps))])
+    disp(['nsys = ',num2str(nsys)])
+
+%     2467        9539       37507      148739
+    save(['data/intsol_n',num2str(nx),'.mat'],'intsol')
+    save(['data/intsoldom1_n',num2str(nx),'.mat'],'sol1')
+    save(['data/intsoldom2_n',num2str(nx),'.mat'],'sol2')
+    save(['data/intsoldom4_n',num2str(nx),'.mat'],'sol4')
+    save(['data/nsys',num2str(nx),'.mat'],'nsys')
 end
 
 % close all

@@ -12,8 +12,8 @@ bottom_left_corner_y = 0;
 L = 1;
 H = 1;
 
-n_elements_x = 300;
-n_elements_y = 300;
+n_elements_x = 500;
+n_elements_y = 500;
 
 mesh = create_mesh(bottom_left_corner_x, ...
     bottom_left_corner_y, ...
@@ -23,18 +23,18 @@ bc_flags = [1 1 1 1];
 
 fespace_u = create_fespace(mesh,'P2',bc_flags);
 fespace_p = create_fespace(mesh,'P1',bc_flags);
-
+display('Fespaces created');
 f = [0;0];
 mu = 1;
 
-U = 1;
+U = 500;
 
 dirichlet_functions = @(x) [0 0;0 0;U 0;0 0]';
 neumann_functions = @(x) [0 0;0 0;0 0;0 0]';
 
 [A,b] = assembler_steady_navier_stokes(fespace_u,fespace_p,f,mu,dirichlet_functions,...
     neumann_functions);
-
+display('Problem assembled');
 % solve stokes problem with u = 0 to get initial guess for newton's method
 u0 = zeros(size(fespace_u.nodes,1)*2,1);
 x0 = A(u0)\b;

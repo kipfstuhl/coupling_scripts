@@ -1,22 +1,21 @@
 clc
 
-% author: Luca Pegolotti on 30/11/2017
+% author: Luca Pegolotti on 20/11/2017
 
-% This script plots the convergence order of the global error computed by
-% compute_order_convergence_P1P2.m 
+% This script plots the convergence order computed by
+% compute_order_convergence_P2P2_confmesh.m and reproduces the plots of
+% Section 3.
 
 % we set the interpreter for strings to latex
 set(0,'defaulttextinterpreter','latex')
-
-errortype = 'H1';
 
 if (~exist('data','dir'))
     error('ERROR: "data" directory does not exist! Run compute_order_convergence_P2P2_confmesh.m first');
 end
 
 % here we load the errors 
-load(['data/globalerror.mat']);
-load(['data/error_P2_',errortype,'.mat']);
+load('data/globalerror.mat');
+load('data/brokenerror.mat');
 
 % mesh sizes
 h = 1./[20 28 40 56 80 114 160];
@@ -26,16 +25,17 @@ h = 1./[20 28 40 56 80 114 160];
 run pick_gammas.m
 
 % discard rows in brokenerror that we do not want to plot
-error2 = error2((ngamma-1)/2+1,:);
+brokenerror = brokenerror((ngamma-1)/2+1,:);
 
 % number of frequencies
-nfreq = size(error1,1);
+nfreq = size(brokenerror,1);
 
 legend_entries = {};
-
-% plot convergence error for domain with P1 basis functions
+% plot the convergence of the error for each frequency w (meaning, each line
+% represents the convergence of the error obtained by adding Fourier basis
+% functions with frequency lower than w)
 for i = 1:nfreq
-    loglog(h,error2(i,:),'.-','Linewidth',1,'Markersize',10)
+    loglog(h,brokenerror(i,:),'.-','Linewidth',1,'Markersize',10)
     hold on
     legend_entries{end+1} = ['$N_\Gamma$ = ',num2str(ngamma(i))];
 end
@@ -46,10 +46,10 @@ legend_entries{end+1} = 'Global solution';
 
 % plot h^2 slope
 h1 = loglog(h,h.^2*7,':k','Linewidth',1)
-%legend_entries{end+1} = '$h^2$';
+legend_entries{end+1} = '$h^2$';
 
 % set axis
-axis([h(end)/1.1 h(1)*1.1 3e-4 1])
+axis([h(end)/1.1 h(1)*1.1 2e-4 1])
 axis square
 grid on
 xlabel('$h$');
