@@ -18,7 +18,7 @@ if (freq == 0)
     % rows of the coupling matrix are constructed similarly to neumann
     % terms (integral on boundaries of the product of the trace of finite
     % element function and a given function)
-    b = apply_neumann_bc(b,fespace,bcflags);
+    b = apply_neumann_bc(b,fespace,@(x) bcflags);
     B = [B;b];
 else
     % integrate sin and cos along the interface

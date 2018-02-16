@@ -12,20 +12,14 @@ M = spdiags([d2 d1 d2],-1:1,sampling,sampling);
 % compute cholesky decomposition of the mass matrix
 C = chol(M);
 
-bfs = {};
 % sample non-orthonormal basis
 V = zeros(sampling,frequencies);
 V(:,1) = ones(sampling,1);
-
-bfs{end+1} = @(x) x.^0;
-for i = 1:Nfrequencies
+for i = 1:frequencies
    index1 = 2*i;
    index2 = 2*i+1;
-    
    V(:,index1) = sin(x*pi*i);
-   bfs{end+1} = @(x) sin(x*pi*i);
    V(:,index2) = cos(x*pi*i);
-   bfs{end+1} = @(x) cos(x*pi*i);
 end
 
 [~,R] = qr(C*V,0);
