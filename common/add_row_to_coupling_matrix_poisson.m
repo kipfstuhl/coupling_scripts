@@ -1,4 +1,9 @@
-function [B] = add_row_to_coupling_matrix_poisson(B,fespace,boundary_index,freq)
+function [B] = add_row_to_coupling_matrix_poisson(B,fespace,boundary_index,freq,varargin)
+ngausspoints = 2;
+if (nargin > 4)
+    ngausspoints = varargin{1};
+end
+
 n = size(fespace.nodes,1);
 b = zeros(1,n);
 
@@ -22,10 +27,10 @@ if (freq == 0)
     B = [B;b];
 else
     % integrate sin and cos along the interface
-    b = apply_neumann_bc(b,fespace,@(x) bcflags * sin(x(ii)*pi*freq/L));
+    b = apply_neumann_bc(b,fespace,@(x) bcflags * sin(x(ii)*pi*freq/L),ngausspoints);
     B = [B;b];
 
     b = b*0;
-    b = apply_neumann_bc(b,fespace,@(x) bcflags * cos(x(ii)*pi*freq/L));
+    b = apply_neumann_bc(b,fespace,@(x) bcflags * cos(x(ii)*pi*freq/L),ngausspoints);
     B = [B;b];
 end
