@@ -22,7 +22,7 @@ for n_elements = N
     
     % create mesh and finite element space
     mesh = create_mesh(0,0,1,1,n_elements,n_elements);
-    fespace = create_fespace(mesh,'P2',[1 1 1 1]);
+    fespace = create_fespace(mesh,'P1',[1 1 1 1]);
     
     % assemble matrix and right hand side
     [A,b] = assembler_poisson(fespace,fun,mu,dir_functions,neu_functions);
@@ -34,4 +34,4 @@ for n_elements = N
 end
 
 % save solution
-save('data_figure4/globalerror.mat','globalerror');
+save('data_figure5/globalerrorP1.mat','globalerror');

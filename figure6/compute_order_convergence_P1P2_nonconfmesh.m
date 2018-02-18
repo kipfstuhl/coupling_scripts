@@ -20,8 +20,8 @@ nrefs = length(N);
 
 nfreq = 15;
 
-% we compute the standard H1 error in both subdomains
-brokenerror = zeros(nfreq+1,nrefs);
+error1 = zeros(nfreq+1,nrefs);
+error2 = zeros(nfreq+1,nrefs);
 
 count = 0;
 for n_elements = N
@@ -61,7 +61,7 @@ for n_elements = N
     % bottom, at the top and at the left boundary and we impose homogeneous
     % Neumann conditions at the right boundary.
     bc1 = [1 0 1 1];
-    fespace1 = create_fespace(mesh1,'P2',bc1);
+    fespace1 = create_fespace(mesh1,'P1',bc1);
     
     % assemble matrices and rhs in the left subdomain
     [A1,rhs1] = assembler_poisson(fespace1,fun,mu,dir_functions,neu_functions);
@@ -88,20 +88,18 @@ for n_elements = N
     for i = 0:nfreq
         disp(['N elements = ',num2str(n_elements),', freq = ',num2str(i)]);
        
-        % at the first iteration, we just consider as basis function the
-        % constant functions. For each next iteration we add sin and cos
-        % function. We use 2 gauss points for the computation of the
-        % integrals and we get instabilities when the number of basis
-        % functions increases
-        B1 = add_row_to_coupling_matrix_poisson(B1,fespace1,2,i,2);
-        B2 = add_row_to_coupling_matrix_poisson(B2,fespace2,4,i,2);
+        % in the first iteration, we just consider as basis function the
+        % constant function. For each next iteration we add sin and cos
+        % functions. Note that, since the mesh is non-conforming, we
+        % increase the number of the gauss points for the integration from
+        % 2 (default value) to 4
+        B1 = add_row_to_coupling_matrix_poisson(B1,fespace1,2,i,4);
+        B2 = add_row_to_coupling_matrix_poisson(B2,fespace2,4,i,4);
         
         % number of lagrange multipliers
         n3 = size(B1,1);
                
-        % build the global matrix (note that Dirichlet boundary conditions are
-        % imposed on A1 and A2 directly in the assembly, and that B1' and B2'
-        % have 0 value in the rows corresponding to Dirichlet boundaries)
+        % build the global matrix
         mat = [A1 sparse(n1,n2) -B1';
                sparse(n2,n1) A2  B2';
                -B1 B2 sparse(n3,n3)];  
@@ -120,13 +118,15 @@ for n_elements = N
         sol1 = sol(indices1);
         sol2 = sol(indices2);
         
-        % compute broken norm of the error
+        % compute errors in domains
         err1 = compute_H1_error(fespace1,sol1,uex,graduex);
         err2 = compute_H1_error(fespace2,sol2,uex,graduex);
-        err = sqrt(err1^2+err2^2);
         
-        brokenerror(i+1,count) = err;              
+        error1(i+1,count) = err1;     
+        error2(i+1,count) = err2;              
     end
 end
 
-save('data_figure4/brokenerror_nonconf_2gausspoints.mat','brokenerror');
+% save solution
+save('data_figure6/error_domain1.mat','error1');
+save('data_figure6/error_domain2.mat','error2');
