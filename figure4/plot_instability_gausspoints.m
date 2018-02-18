@@ -13,7 +13,7 @@ gammas = 1:2:31;
 leglab = {};
 
 subplot(1,2,1)
-load('data_figure3/brokenerror_nonconf_2gausspoints.mat');
+load('data_figure4/brokenerror_nonconf_2gausspoints.mat');
 
 for i = 1:nrefs
     semilogy(gammas,brokenerror(:,i),'.-','Linewidth',1,'Markersize',10);
@@ -28,7 +28,7 @@ axis([1 31 1e-4 1])
 title('2 Gauss quadrature nodes')
 
 subplot(1,2,2)
-load('data_figure3/brokenerror_nonconf.mat');
+load('data_figure4/brokenerror_nonconf.mat');
 
 for i = 1:nrefs
     semilogy(gammas,brokenerror(:,i),'.-','Linewidth',1,'Markersize',10);
