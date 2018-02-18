@@ -23,8 +23,6 @@ nfreq = 15;
 % we compute the standard H1 error in both subdomains
 brokenerror = zeros(nfreq+1,nrefs);
 
-R = compute_orthonormalization_matrix(nfreq,10000);
-
 count = 0;
 for n_elements = N
     count = count+1;
@@ -90,9 +88,9 @@ for n_elements = N
     for i = 0:nfreq
         disp(['N elements = ',num2str(n_elements),', freq = ',num2str(i)]);
        
-        % at the first iteration, we just consider as basis function the
+        % in the first iteration, we just consider as basis function the
         % constant function. For each next iteration we add sin and cos
-        % function. Note that, since the mesh is non-conforming, we
+        % functions. Note that, since the mesh is non-conforming, we
         % increase the number of the gauss points for the integration from
         % 2 (default value) to 4
         B1 = add_row_to_coupling_matrix_poisson(B1,fespace1,2,i,4);
@@ -100,16 +98,18 @@ for n_elements = N
         
         % number of lagrange multipliers
         n3 = size(B1,1);
-        
-        
-        % build the global matrix (note that Dirichlet boundary conditions are
-        % imposed on A1 and A2 directly in the assembly, and that B1' and B2'
-        % have 0 value in the rows corresponding to Dirichlet boundaries)
+               
+        % build the global matrix
         mat = [A1 sparse(n1,n2) -B1';
                sparse(n2,n1) A2  B2';
-               -B1 B2 sparse(n3,n3)];        
+               -B1 B2 sparse(n3,n3)];  
+           
         % build the global right handside
         f = [rhs1;rhs2;zeros(n3,1)];
+        
+        % apply bc
+        [mat,f] = apply_dirichlet_bc_global_matrix_and_rhs(mat,f,...
+                    {fespace1,fespace2},dir_functions);
         
         % solve the linear system A u = f
         sol = mat\f;
@@ -123,9 +123,9 @@ for n_elements = N
         err2 = compute_H1_error(fespace2,sol2,uex,graduex);
         err = sqrt(err1^2+err2^2);
         
-        disp(['Total H1 error = ', num2str(err)]);
         brokenerror(i+1,count) = err;              
     end
 end
 
+% save solution
 save('data_figure3/brokenerror_nonconf.mat','brokenerror');

@@ -100,13 +100,19 @@ for i = 0:nfreq
     % build the global matrix (note that Dirichlet boundary conditions are
     % imposed on A1 and A2 directly in the assembly, and that B1' and B2' 
     % have 0 value in the rows corresponding to Dirichlet boundaries)
-    A = sparse([A1 sparse(n1,n2) -B1'; sparse(n2,n1) A2 B2'; -B1 B2 sparse(n3,n3)]);
+    mat = sparse([A1 sparse(n1,n2) -B1'; 
+                  sparse(n2,n1) A2 B2'; 
+                  -B1 B2 sparse(n3,n3)]);
     
     % build the global right handside
     f = [rhs1;rhs2;zeros(n3,1)];
     
+    % apply bc
+    [mat,f] = apply_dirichlet_bc_global_matrix_and_rhs(mat,f,...
+                {fespace1,fespace2},dir_functions);  
+            
     % solve the linear system A u = f
-    sol = A\f;
+    sol = mat\f;
     
     % divide the solution into left and right solutions
     sol1 = sol(indices1);

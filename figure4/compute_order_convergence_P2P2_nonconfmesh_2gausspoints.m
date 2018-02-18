@@ -1,9 +1,16 @@
 clear all
+close all
 clc
+
+% we set the interpreter for strings to latex
+set(0,'defaulttextinterpreter','latex')
 
 % load the exact solution and forcing term
 run load_exact_solution_poisson.m
 
+% dirichlet and neumann functions. The order of the edges is the same as in
+% the boundary condition flags. Here we are only using homogeneous boundary
+% conditions anyway.
 dir_functions = @(x) [0;0;0;0];
 neu_functions = @(x) [0;0;0;0];
 
@@ -11,9 +18,9 @@ neu_functions = @(x) [0;0;0;0];
 N = [20 28 40 56 80 114 160];
 nrefs = length(N);
 
-% use 15 frequencies on the interface
 nfreq = 15;
 
+% we compute the standard H1 error in both subdomains
 brokenerror = zeros(nfreq+1,nrefs);
 
 count = 0;
@@ -23,7 +30,7 @@ for n_elements = N
     n1x = n_elements/2;
     n2x = n_elements/2;
     n1y = n_elements;
-    n2y = n_elements;
+    n2y = n_elements + 1; % add one element to make the mesh non-conforming
     
     % create mesh on left subdomain
     xp1 = 0;
@@ -81,16 +88,20 @@ for n_elements = N
     for i = 0:nfreq
         disp(['N elements = ',num2str(n_elements),', freq = ',num2str(i)]);
        
-        % in the first iteration, we just consider as basis function the
-        % constant function. For each next iteration we add sin and cos
-        % functions
-        B1 = add_row_to_coupling_matrix_poisson(B1,fespace1,2,i);
-        B2 = add_row_to_coupling_matrix_poisson(B2,fespace2,4,i);
+        % at the first iteration, we just consider as basis function the
+        % constant functions. For each next iteration we add sin and cos
+        % function. We use 2 gauss points for the computation of the
+        % integrals and we get instabilities when the number of basis
+        % functions increases
+        B1 = add_row_to_coupling_matrix_poisson(B1,fespace1,2,i,2);
+        B2 = add_row_to_coupling_matrix_poisson(B2,fespace2,4,i,2);
         
         % number of lagrange multipliers
         n3 = size(B1,1);
-        
-        % build the global matrix
+               
+        % build the global matrix (note that Dirichlet boundary conditions are
+        % imposed on A1 and A2 directly in the assembly, and that B1' and B2'
+        % have 0 value in the rows corresponding to Dirichlet boundaries)
         mat = [A1 sparse(n1,n2) -B1';
                sparse(n2,n1) A2  B2';
                -B1 B2 sparse(n3,n3)];  
@@ -101,7 +112,7 @@ for n_elements = N
         % apply bc
         [mat,f] = apply_dirichlet_bc_global_matrix_and_rhs(mat,f,...
                     {fespace1,fespace2},dir_functions);
-
+        
         % solve the linear system A u = f
         sol = mat\f;
         
@@ -113,10 +124,9 @@ for n_elements = N
         err1 = compute_H1_error(fespace1,sol1,uex,graduex);
         err2 = compute_H1_error(fespace2,sol2,uex,graduex);
         err = sqrt(err1^2+err2^2);
-                
+        
         brokenerror(i+1,count) = err;              
     end
 end
 
-% save solution
-save('data_figure3/brokenerror_conf.mat','brokenerror');
+save('data_figure3/brokenerror_nonconf_2gausspoints.mat','brokenerror');
