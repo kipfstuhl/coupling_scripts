@@ -48,7 +48,6 @@ end
 loglog(h,globalerror,'--k','Linewidth',1);
 
 xlabel('$n_\Gamma$');
-ylabel('error');
 legend(leglab,'Location','Southeast','interpreter','latex');
 set(gca,'Fontsize',13)
 axis([min(h)/1.1 max(h)*1.1 1e-4 1])
