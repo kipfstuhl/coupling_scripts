@@ -36,4 +36,4 @@ xlabel('$n_\Gamma$');
 legend(leglab);
 legend(leglab,'Location','Northwest','interpreter','latex');
 set(gca,'Fontsize',13)
-axis([1 31 0 1e10])
+axis([1 31 0 5e10])

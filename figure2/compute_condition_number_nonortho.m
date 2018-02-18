@@ -68,6 +68,13 @@ for n_elements = N
         mat = [A1 sparse(n1,n2) -B1';
                sparse(n2,n1) A2 B2';
                -B1 B2 sparse(nlm,nlm)];
+           
+        % create vector just to impose boundary conditions
+        f = zeros(size(mat,1),1);
+
+        % apply bc
+        [mat,f] = apply_dirichlet_bc_global_matrix_and_rhs(mat,f,...
+                    {fespace1,fespace2},dir_functions);
         
         k = condest(mat,50);
         condnum(i+1,count) = k;
