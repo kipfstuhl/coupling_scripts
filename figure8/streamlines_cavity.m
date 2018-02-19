@@ -1,4 +1,4 @@
-function plot_streamlines_cavity(sol,color,res)
+function streamlines_cavity(sol,color,res)
 
 xcenter = 0.546;
 ycenter = 0.594;
