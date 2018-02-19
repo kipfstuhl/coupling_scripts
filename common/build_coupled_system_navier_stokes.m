@@ -31,7 +31,7 @@ Bt = [];
 
 for i = 1:ninterfaces
     interface_connectivity = domain_connectivity(i,:);
-    [Bnew,Btnew] = build_coupling_block(fespaces_u,nus,nps,ns,normals,interface_connectivity,nbasisfunctions(i),gausspoints,typebasisfunctions);
+    [Bnew,Btnew] = build_coupling_block_navier_stokes(fespaces_u,nus,nps,ns,normals,interface_connectivity,nbasisfunctions(i),gausspoints,typebasisfunctions);
     
     B = [B; Bnew];
     Bt = [Bt Btnew]; 
