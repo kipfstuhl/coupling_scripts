@@ -1,7 +1,12 @@
 Efficient coupling of PDEs based on weak transmission conditions
 -------------------------
-
 The MATLAB code in this repository is complementary to the paper *Coupling non-conforming discretizations of PDEs by spectral approximation of the Lagrange multiplier space* (Deparis, S. and Pegolotti, L., 2018). It was used to generate the figures in the *Numerical applications* section. Most of the functionalities we use are implemented in *feamat* (https://github.com/lucapegolotti/feamat), which is a set of routines for the solution of Finite Element problems on structured meshes. Note that the code is not particularly optimized, and therefore *feamat* should be used only for prototyping purposes. The *feamat* repository is hereby included as submodule.
+
+HOW TO CLONE
+-------------------------
+Run
+> > git clone --recurse-submodules git@bitbucket.org:pegolotti/coupling_scripts.git
+to recursively clone the directory and *feamat*.
 
 HOW TO USE
 -------------------------
