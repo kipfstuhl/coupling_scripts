@@ -34,4 +34,4 @@ for n_elements = N
 end
 
 % save solution
-save('data_figure5/globalerrorP1.mat','globalerror');
+save('data_figure6/globalerrorP1.mat','globalerror');

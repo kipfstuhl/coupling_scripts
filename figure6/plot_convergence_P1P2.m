@@ -41,7 +41,6 @@ load('data_figure6/error_domain2.mat');
 for i = gammas
     freq = (i + 1)/2;
     loglog(h,error2(freq,:),'.-','Linewidth',1,'Markersize',10);
-    leglab{end+1} = ['$n_\Gamma = ',num2str(i),'$'];
     hold on
 end
 

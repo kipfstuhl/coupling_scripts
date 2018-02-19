@@ -32,7 +32,6 @@ load('data_figure4/brokenerror_nonconf.mat');
 
 for i = 1:nrefs
     semilogy(gammas,brokenerror(:,i),'.-','Linewidth',1,'Markersize',10);
-    leglab{end+1} = ['$h = 1/',num2str(N(i)),'$'];
     hold on
 end
 
