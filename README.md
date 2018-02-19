@@ -5,9 +5,10 @@ The MATLAB code in this repository is complementary to the paper *Coupling non-c
 HOW TO CLONE
 -------------------------
 Run
-> > git clone --recurse-submodules git@bitbucket.org:pegolotti/coupling_scripts.git
+```
+ git clone --recurse-submodules git@bitbucket.org:pegolotti/coupling_scripts.git
+```
 to recursively clone the directory and *feamat*.
-
 HOW TO USE
 -------------------------
 The functions of *feamat* must be beforehand included by running the run_addpaths.m script in the root of the project. The repository is structured in multiple folders, each containing the scripts for generating every figure in the paper. In each figure* folder, a run_all.m scrips executes all the scripts that are necessary to generate the data to be plotted.
