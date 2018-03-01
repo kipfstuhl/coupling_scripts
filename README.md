@@ -8,7 +8,7 @@ How to clone
 -------------------------
 Run
 ```
- git clone --recurse-submodules git@bitbucket.org:pegolotti/coupling_scripts.git
+ git clone --recurse-submodules https://github.com/lucapegolotti/coupling_scripts.git
 ```
 to recursively clone the directory and *feamat*.
 
