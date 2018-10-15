@@ -138,13 +138,13 @@ for i = 1:3 % interface 1
                 %                     keyboard
                 %                 end
   
-%                 bbb = meshes{k}.boundaries{abs(connectivity(j,k))};
-%                 bbb = [bbb(:,1);bbb(end,end)];
-%                 xxx = meshes{k}.vertices(bbb,1:2);
-%                 
-%                 plot3(xxx(:,1),xxx(:,2),prod*si*xxx(:,1).^0,'Linewidth',1);
-%                 hold on
-%                 pause()
+                bbb = meshes{k}.boundaries{abs(connectivity(j,k))};
+                bbb = [bbb(:,1);bbb(end,end)];
+                xxx = meshes{k}.vertices(bbb,1:2);
+                
+                plot3(xxx(:,1),xxx(:,2),prod*si*xxx(:,1).^0,'Linewidth',1);
+                hold on
+                pause()
             end
         end
     end
@@ -164,16 +164,16 @@ for i = 1:nfreq
                 b1 = apply_neumann_bc(b1,fespace_us{k},@(x) flags * f(x,xc',ls(j)),8);
                 b(indices{k},1) = b(indices{k},1) + b1;
                 
-%                 disp(['i = ', num2str(i), ...
-%                     ' j = ',num2str(j), ...
-%                     ' k = ',num2str(k)])
-%                 bbb = meshes{k}.boundaries{abs(connectivity(j,k))};
-%                 bbb = [bbb(:,1);bbb(end,end)];
-%                 xxx = meshes{k}.vertices(bbb,1:2);
-%                 
-%                 plot3(xxx(:,1),xxx(:,2),f(xxx(:,1:2)',xc,ls(j)),'Linewidth',1);
-%                 hold on
-%                 pause()
+                disp(['i = ', num2str(i), ...
+                    ' j = ',num2str(j), ...
+                    ' k = ',num2str(k)])
+                bbb = meshes{k}.boundaries{abs(connectivity(j,k))};
+                bbb = [bbb(:,1);bbb(end,end)];
+                xxx = meshes{k}.vertices(bbb,1:2);
+                
+                plot3(xxx(:,1),xxx(:,2),f(xxx(:,1:2)',xc,ls(j)),'Linewidth',1);
+                hold on
+                pause()
             end  
         end
         %             f = @(x,xp,l) cos(i*norm(x-xp)/l*pi);

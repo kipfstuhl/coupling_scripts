@@ -1,14 +1,13 @@
 #!/bin/bash
 
-GMSH="/Applications/Gmsh.app/Contents/MacOS/gmsh"
-
-$GMSH -3 bifurcation.geo
 PYTHON=/usr/bin/python2.7
 GMSH=/Applications/Gmsh.app/Contents/MacOS/gmsh
 THIS=$(pwd)
 
 rm *.msh
 rm -r -f refinement*
+
+$GMSH -3 bifurcation_smooth_distorted_fine.geo
 
 ref=1
 mult=1
@@ -19,7 +18,7 @@ do
 	cd $DIR
 
     # inflow
-    FILE=inflow
+    FILE=inflow_distorted
     cp ../$FILE.geo .
     meshsize=$(grep -n "lc = " $FILE.geo)
     meshsize=${meshsize:7:5}
@@ -32,7 +31,7 @@ do
     $GMSH -3 $FILE.geo
 
     # outflow 1
-    FILE=outflow1
+    FILE=outflow1_distorted
     cp ../$FILE.geo .
     meshsize=$(grep -n "lc = " $FILE.geo)
     meshsize=${meshsize:7:4}
@@ -45,10 +44,23 @@ do
     $GMSH -3 $FILE.geo
 
     # outflow 2
-    FILE=outflow2
+    FILE=outflow2_distorted
     cp ../$FILE.geo .
     meshsize=$(grep -n "lc = " $FILE.geo)
     meshsize=${meshsize:7:5}
+    echo $meshsize
+    mymult=$(echo "$meshsize / $mult" | bc -l)
+    # linux
+    # sed -i "s/lc = $meshsize;/lc = $mymult;/g" $FILE.geo
+    # mac
+    sed -i '.original' "s/lc = $meshsize;/lc = $mymult;/g" $FILE.geo
+    $GMSH -3 $FILE.geo
+
+	# smooth bifurcation
+    FILE=bifurcation_smooth_distorted
+    cp ../$FILE.geo .
+    meshsize=$(grep -n "lc = " $FILE.geo)
+    meshsize=${meshsize:7:3}
     echo $meshsize
     mymult=$(echo "$meshsize / $mult" | bc -l)
     # linux
