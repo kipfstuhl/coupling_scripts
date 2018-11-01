@@ -1,4 +1,5 @@
 lc = .02616255653005991925;
+// lc = 0.176;
 
 r = 0.5;
 h1 = 0.1;
@@ -85,4 +86,4 @@ Physical Line("Wall_up", 4) = {3};
 //+
 Physical Line("Interface_2", 5) = {1};
 //+
-Physical Surface("S") = {1};
+Physical Surface("S",6) = {1};

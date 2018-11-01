@@ -1,4 +1,5 @@
 lc = .02828427124746195195;
+// lc = 0.16;
 
 r = 0.5;
 h1 = 0.1;
@@ -63,4 +64,4 @@ Physical Line("Interface_1", 4) = {10};
 //+
 Physical Line("Interface_2", 5) = {9};
 //+
-Physical Surface("S", 11) = {1};
+Physical Surface("S", 6) = {1};
