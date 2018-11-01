@@ -40,8 +40,9 @@ method.jac = J;
 method.tol = tol;
 method.maxit = maxit;
 method.x0 = x0;
-
+save('workspace_exsol');
 [sol,err,it] = solve_fluid_system(A,b,fespace_u,fespace_p,method);
 % [sol,err,it] = solve_fluid_system(A,b,fespace_u,fespace_p);
 
-save('exsol.mat','sol');
+save('solutions/exsol.mat','sol');
+export_vtk_fluid(sol,'fine_sol');

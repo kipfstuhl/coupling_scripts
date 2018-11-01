@@ -6,13 +6,14 @@ clc
 set(0,'defaulttextinterpreter','latex')
 
 % err = [0.752347963183040   0.707126024577747   0.639972894340215];
+% err = [ 0.9654    0.8411    0.6497    0.7433];
 err = [];
 erru = [];
 errp = [];
 hs = [];
 
 % for ref = [1 3 5 7 9]
-for ref = [1]
+for ref = [1 2 3 4 5]
     ref_inflow = ref;
     ref_out1 = ref;
     ref_out2 = ref;
@@ -84,7 +85,7 @@ for ref = [1]
     ns = [n1;n2;n3];
     ls = [l1 l2 l3];
     
-    nfreqs = [10 10 10];
+    nfreqs = [12 12 12];
     % build mass matrices on sample points
     nsamples = 1000;
     
@@ -200,12 +201,10 @@ for ref = [1]
     
     nlamb = size(B,2);
     
-    A = @(u) [As{1}(u) sparse(n_nodes_tot{1},n_nodes_tot{2}) sparse(n_nodes_tot{1},n_nodes_tot{3}); ...
-        sparse(n_nodes_tot{2},n_nodes_tot{1}) As{2}(u) sparse(n_nodes_tot{2},n_nodes_tot{3}); ...
-        sparse(n_nodes_tot{3},n_nodes_tot{1}) sparse(n_nodes_tot{3},n_nodes_tot{2}) As{3}(u)];
-    
     jac_block11 = @(u) [];
+    A = @(u) [];
     for i = 1:3
+        A = @(u) blkdiag(A(u),As{i}(u(indices{i})));
         jac_block11 = @(u) blkdiag(jac_block11(u),build_jac_navier_stokes(As{i},u(indices{i}),fespace_us{i}));
     end
     
@@ -261,6 +260,7 @@ for ref = [1]
 % 
 %         [x0,er,it] = solve_with_newtons_method(f,x0,jac,tol,maxit);
 %     end
+
     x0 = zeros(length(bs{1}) + length(bs{2}) + length(bs{3}),1);
     x0 = [x0;zeros(nlamb,1)];
 

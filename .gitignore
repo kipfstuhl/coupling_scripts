@@ -4,3 +4,4 @@
 data/
 *.vtk
 *.msh
+create_plots
