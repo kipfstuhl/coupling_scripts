@@ -1,7 +1,9 @@
+% creating geometry for the inflow
 r = 0.5;
 h1 = 0.1;
 l = 4;
 
+% points
 p0 = [0, 0];
 p1 = [0, -r];
 p2 = [0, r];
@@ -46,8 +48,6 @@ p3_ = [p3(1) 0];
 p4_ = [p4(1) 0];
 p5_ = [p5(1) 0];
 
-% TOP GEOMETRY
-
 ni = 4;
 nj = 3;
 coefs = zeros(2,ni,nj);
@@ -68,16 +68,3 @@ coefs(:,3,3) = p4;
 coefs(:,4,3) = p5;
 
 nurb = nrbmak(coefs,{[0 0 0 0 1 1 1 1],[0 0 0.5 1 1]});
-% nrbplot(nurb,[30 30])
-% view(0,90)
-% hold on
-% 
-% for i = 1:ni
-%     for j = 1:nj
-%         p = coefs(:,i,j);
-%         plot(p(1),p(2),'.r','Markersize',10);
-%     end
-% end
-% 
-% mesh = read_mesh('../meshes/refinement3/inflow_distorted.msh');
-% draw_mesh(mesh,[0 0 1])

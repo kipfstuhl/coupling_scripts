@@ -1,6 +1,9 @@
+% creating geometry for the inflow
 r = 0.5;
 h1 = 0.1;
 l = 4;
+
+% points
 p5 = [l/2, r + h1];
 h2 = 0.5;
 p6 = [l/2+l/8, r + 3*h1/2];
@@ -45,13 +48,3 @@ coefs(:,3,3) = p7;
 coefs(:,4,3) = p8;
 
 nurb = nrbmak(coefs,{[0 0 0 0 1 1 1 1],[0 0 0.5 1 1]});
-% nrbplot(nurb,[30 30],'colormap','white')
-% view(0,90)
-% hold on
-% 
-% for i = 1:ni
-%     for j = 1:nj
-%         p = coefs(:,i,j);
-%         plot(p(1),p(2),'.r','Markersize',10);
-%     end
-% end

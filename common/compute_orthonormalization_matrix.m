@@ -25,5 +25,3 @@ for i = 1:frequencies
 end
  
 [~,R] = qr(C*V,0);
-%Q = C\Q;
-%plot(x,Q);
