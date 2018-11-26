@@ -25,3 +25,8 @@ for i = 1:frequencies
 end
  
 [~,R] = qr(C*V,0);
+<<<<<<< HEAD
+=======
+%Q = C\Q;
+%plot(x,Q);
+>>>>>>> 9a7c186a025f77aba575e3b8f67225f40cffb173

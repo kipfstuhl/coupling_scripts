@@ -3,4 +3,3 @@
 *.m~
 data/
 *.vtk
-create_plots
