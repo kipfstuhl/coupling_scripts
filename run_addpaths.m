@@ -7,8 +7,3 @@ run feamat/addpaths.m
 
 % Add common folder to path
 addpath(genpath('./common/'))
-<<<<<<< HEAD
-addpath(genpath('./nvr_stokes_iga'))
-=======
->>>>>>> 9a7c186a025f77aba575e3b8f67225f40cffb173
-
