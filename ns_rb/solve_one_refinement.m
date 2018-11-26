@@ -26,14 +26,14 @@ neu = @(x) zeros(2,6);
 totalerr = [];
 totalerr_lag = [];
 
-for freqq = 0:1:5
+for freqq = 0
     disp(['Freq = ',num2str(freqq)]);
     err = [];
     err_lag = [];
     erru = [];
     errp = [];
     hs = [];
-    for ref = 5:5
+    for ref = 5
         ref_inflow = ref;
         ref_out1 = ref;
         ref_out2 = ref;
@@ -134,28 +134,28 @@ for freqq = 0:1:5
         
         prods = zeros(3);
         % add "constants"
-%                 for i = 1:3 % interface 1
-%                     bx = zeros(totalnodes,1);
-%                     by = zeros(totalnodes,1);
-%                     for j = 1:3 % interface 2
-%                         prod = abs(ts(i,:)*ns(j,:)');
-%                         prods(i,j) = prod;
-%                         disp(['i = ', num2str(i),' j = ',num2str(j),' prod = ',num2str(prod)])
-%                         for k = 1:3 % domains
-%                             flags = zeros(1,n_boundaries(k));
-%                             si = sign(connectivity(j,k));
-%                             if (si ~= 0)
-%                                 flags(abs(connectivity(j,k))) = si;
-%                                 b1 = zeros(n_nodes_us{k},1);
-%                                 b2 = zeros(n_nodes_us{k},1);
-%                                 b1 = apply_neumann_bc(b1,fespace_us{k},@(x) prod*flags,8);
-%                                 bx(indices{k}) = bx(indices{k}) + [b1;b2];
-%                                 by(indices{k}) = by(indices{k}) + [b2;b1];
-%                             end
-%                         end
-%                     end
-%                     B = [B bx by];
-%                 end
+        %                 for i = 1:3 % interface 1
+        %                     bx = zeros(totalnodes,1);
+        %                     by = zeros(totalnodes,1);
+        %                     for j = 1:3 % interface 2
+        %                         prod = abs(ts(i,:)*ns(j,:)');
+        %                         prods(i,j) = prod;
+        %                         disp(['i = ', num2str(i),' j = ',num2str(j),' prod = ',num2str(prod)])
+        %                         for k = 1:3 % domains
+        %                             flags = zeros(1,n_boundaries(k));
+        %                             si = sign(connectivity(j,k));
+        %                             if (si ~= 0)
+        %                                 flags(abs(connectivity(j,k))) = si;
+        %                                 b1 = zeros(n_nodes_us{k},1);
+        %                                 b2 = zeros(n_nodes_us{k},1);
+        %                                 b1 = apply_neumann_bc(b1,fespace_us{k},@(x) prod*flags,8);
+        %                                 bx(indices{k}) = bx(indices{k}) + [b1;b2];
+        %                                 by(indices{k}) = by(indices{k}) + [b2;b1];
+        %                             end
+        %                         end
+        %                     end
+        %                     B = [B bx by];
+        %                 end
         
         for j = 1:3 % interface
             for i = 0:nfreqs(j)
@@ -258,98 +258,18 @@ for freqq = 0:1:5
             cur = cur + n_nodes_tot{i};
         end
         
-        % compute errors
+        hold on
+        unorm1 = sqrt(sols{1}.u1.^2 + sols{1}.u2.^2);
+        unorm2 = sqrt(sols{2}.u1.^2 + sols{2}.u2.^2);
+        unorm3 = sqrt(sols{3}.u1.^2 + sols{3}.u2.^2);
         
-        %         lagrange_mult = sol(end-nlamb+1:end);
-        %         npoints = 10000;
-        %         prods_n = prods*lagrange_mult([1 3 5]);
-        %         prods_t = prods*lagrange_mult([2 4 6]);
-        %         errl = 0;
-        %         cur = 6;
-        %         for i = 1:3 % interface
-        %             indices1_n = 1:4:nfreqs(i)*4;
-        %             indices2_n = 2:4:nfreqs(i)*4;
-        %
-        %             indices1_t = 3:4:nfreqs(i)*4;
-        %             indices2_t = 4:4:nfreqs(i)*4;
-        %
-        %             indices_n = reshape([indices1_n;indices2_n],nfreqs(i)*2,1)';
-        %             indices_t = reshape([indices1_t;indices2_t],nfreqs(i)*2,1)';
-        %             mylang_n = lagrange_mult(indices_n+cur);
-        %             mylang_t = lagrange_mult(indices_t+cur);
-        %
-        %             x = linspace(0,ls(i),npoints);
-        %             st_exn_f = @(x) [1 0]*(mu*exsol_grad(x) * ns(i,:)' - exsol_p(x)*ns(i,:)');
-        %             st_ext_f = @(x) [0 1]*(mu*exsol_grad(x) * ns(i,:)' - exsol_p(x)*ns(i,:)');
-        %
-        %             st_exn = zeros(npoints,1);
-        %             st_ext = zeros(npoints,1);
-        %             for j = 1:npoints
-        %                 x_n = xc' + ts(i,:)'*x(j);
-        %                 st_exn(j) = st_exn_f(x_n);
-        %                 st_ext(j) = st_ext_f(x_n);
-        %             end
-        %
-        %             % reconstruct constant
-        %             st_n = ones(npoints,1) * prods_n(i);
-        %             st_t = ones(npoints,1) * prods_t(i);
-        %             for j = 1:length(mylang_n)/2
-        %                 st_n = st_n + sin(j*x'/ls(i)*pi/2) * mylang_n((2*j-1));
-        %                 st_t = st_t + sin(j*x'/ls(i)*pi/2) * mylang_t((2*j-1));
-        %                 st_n = st_n + cos(j*x'/ls(i)*pi/2) * mylang_n(2*j);
-        %                 st_t = st_t + cos(j*x'/ls(i)*pi/2) * mylang_t(2*j);
-        %             end
-        %
-        %             dif_n = st_n - st_exn;
-        %             dif_t = st_t - st_ext;
-        %
-        %             errl = errl + sqrt(trapz(x,dif_n.^2)+trapz(x,dif_t.^2));
-        %             if (nfreqs(i) ~= 0)
-        %                 cur = cur+indices2_t(end);
-        %             end
-        %         end
-        %
-        %         err_lag = [err_lag errl]
+        minnorm = min([unorm1;unorm2;unorm3]);
+        maxnorm = max([unorm1;unorm2;unorm3]);
         
-        errsu = zeros(3,1);
-        errsp = zeros(3,1);
-        
-        %         for i = 1:3
-        %             errsu(i) = compute_H1_error_velocity(fespace_us{i},sols{i},exsol_u,exsol_grad);
-        %             errsp(i) = compute_L2_error(fespace_ps{i},sols{i}.p,exsol_p);
-        %         end
-        
-        load(['solutions/u1s_ref',num2str(ref),'.mat']);
-        load(['solutions/u2s_ref',num2str(ref),'.mat']);
-        load(['solutions/ps_ref',num2str(ref),'.mat']);
-        
-        bcmatrix = [1 0 0 1 1; 1 1 1 0 0; 0 1 1 1 0];
-        for i = 1:3
-            fespace_us{i}.bc = bcmatrix(i,:);
-            fespace_ps{i}.bc = bcmatrix(i,:);
-            
-            indu = find_dirichlet_indices(fespace_us{i});
-            indp = find_dirichlet_indices(fespace_ps{i});
-            
-            dif1 = sols{i}.u1 - u1s{i};
-            dif1(indu) = 0;
-            e1 = compute_H1_error(fespace_us{i},dif1,@(x) 0,@(x) [0;0]);
-            
-            dif2 = sols{i}.u2 - u2s{i};
-            dif2(indu) = 0;
-            e2 = compute_H1_error(fespace_us{i},dif2,@(x) 0,@(x) [0;0]);
-            errsu(i) = sqrt(e1^2 + e2^2);
-            
-            
-            difp = sols{i}.p - ps{i};
-            difp(indp) = 0;
-            e = compute_L2_error(fespace_ps{i},difp,@(x) 0);
-            errsp(i) = e;
-        end
-        errs = errsu + errsp;
-        err = [err sqrt(errs'*errs)]
-        erru = [erru sqrt(errsu'*errsu)];
-        errp = [errp sqrt(errsp'*errsp)];
+        plot_fe_fluid_function(sols{1},'U')
+        plot_fe_fluid_function(sols{2},'U')
+        plot_fe_fluid_function(sols{3},'U')
+        caxis([minnorm maxnorm]);
         
         vertices = [mesh_in.vertices;mesh_out1.vertices;mesh_out2.vertices];
         
@@ -360,9 +280,61 @@ for freqq = 0:1:5
         
         axis([xm xM ym yM])
         
-        % plot_fe_function(sols{1}.u1,fespace_us{1})
-        % plot_fe_function(sols{2}.u1,fespace_us{2})
-        % plot_fe_function(sols{3}.u1,fespace_us{3})
+        axis equal
+        set(gca,'color','none')
+        set(gca,'Visible','off')
+        hold off
+        colorbar('Location','south')
+        
+        figure
+        
+        load(['solutions/u1s_ref',num2str(ref),'.mat']);
+        load(['solutions/u2s_ref',num2str(ref),'.mat']);
+        load(['solutions/ps_ref',num2str(ref),'.mat']);
+        
+        bcmatrix = [1 0 0 1 1; 1 1 1 0 0; 0 1 1 1 0];
+        minlog = Inf;
+        maxlog = -Inf;
+        for i = 1:3
+            fespace_us{i}.bc = bcmatrix(i,:);
+            
+            indu = find_dirichlet_indices(fespace_us{i});
+            
+            normu = sqrt(sols{i}.u1.^2 + sols{i}.u2.^2);
+            
+            dif1 = abs(sols{i}.u1 - u1s{i});
+            dif1(indu) = 1e-6;
+            
+            dif2 = abs(sols{i}.u2 - u2s{i});
+            dif2(indu) = 1e-6;
+
+            N = log(sqrt(dif1.^2 + dif2.^2));
+           
+            hold on
+            [~,h] = tricontf(fespace_us{i}.mesh.vertices(:,1),fespace_us{i}.mesh.vertices(:,2), ...
+                   fespace_us{i}.mesh.elements(:,1:3),N(1:size(fespace_us{i}.mesh.vertices(:,1),1)),20);
+            set(h,'edgecolor','none');
+            minlog = min(min(N),minlog);
+            maxlog = max(max(N),maxlog);
+        end
+        c = linspace(minlog,maxlog,6);
+        expc = exp(c);
+        for i = 1:length(c)
+            check = 1;
+            count = 0;
+            while check
+                count = count + 1;
+                if (floor(expc(i) * 10^count) > 0)
+                    check = false;
+                end
+            end
+            expc(i) = 10^(-count) * floor(expc(i) * 10^count);
+        end
+        
+        colorbar('YTick',c,'YTickLabel',expc,'Location','south');
+        axis([xm xM ym yM])
+        
+        axis equal
         set(gca,'color','none')
         set(gca,'Visible','off')
         hold off
@@ -370,7 +342,4 @@ for freqq = 0:1:5
     totalerr = [totalerr;err]
     totalerr_lag = [totalerr_lag;err_lag]
 end
-
-save('error_apprsolution_solution.mat','totalerr','hs')
-% save('erroronlysincosdoublesupport_lag.mat','totalerr_lag');
 

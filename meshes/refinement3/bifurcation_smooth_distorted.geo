@@ -1,4 +1,5 @@
-lc = .14142135623730960976;
+SetFactory("OpenCASCADE");
+lc = .0404;
 
 r = 0.5;
 h1 = 0.1;
@@ -70,22 +71,24 @@ Point(21) = {l/2+l/8+ t1_*r2, -(r + 3*h3/2)+ t2_*r2, 0, lc};
 
 Point(12) = {(l/2+l/8 + t1*r1 + l/2+l/8+ t1_*r2)/2, (r + 3*h1/2 + t2*r1 -(r + 3*h3/2)+ t2_*r2)/2, 0, lc};
 //+
-BSpline(8) = {19, 20, 21, 12, 11, 10, 9};
+BSpline(8) = {19, 20, 21, 12};
 //+
-Line Loop(1) = {5, 6, 7, 8, -4, -3, -2, -1};
+BSpline(9) = {12, 11, 10, 9};
+//+
+Line Loop(1) = {6, 7, 8, 9, -4, -3, -2, -1, 5};
 //+
 Plane Surface(1) = {1};
 //+
 Physical Line("Wall_down", 1) = {5, 6};
 //+
-Physical Line("Outlet1", 2) = {7};
+Physical Line("Outlet_1", 2) = {7};
 //+
-Physical Line("Wall_right", 3) = {8};
+Physical Line("Wall_right", 3) = {8, 9};
 //+
 Physical Line("Outlet_2", 4) = {4};
 //+
-Physical Line("Wall_up", 5) = {2, 3};
+Physical Line("Wall_up", 5) = {3, 2};
 //+
 Physical Line("Inlet", 6) = {1};
 //+
-Physical Surface("S") = {1};
+Physical Surface("S", 7) = {1};

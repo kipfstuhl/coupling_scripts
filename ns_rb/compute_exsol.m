@@ -2,14 +2,13 @@ clear all
 close all
 clc
 
+% load('solutions/fine_mesh.mat')
+% mesh = fine_mesh;
 mesh = read_mesh('../meshes/bifurcation_smooth_distorted_fine.msh');
-mesh.triang = triangulation(mesh.elements(:,1:3),mesh.vertices(:,1:2));
-% mesh = read_mesh('../meshes/refinement8/bifurcation_smooth_distorted.msh');
-%  mesh.bounding_mesh = compute_bounding_mesh(mesh,10,10);
 disp('Mesh has been read');
 
-fespace_u = create_fespace(mesh,'P2',[1 0 1 0 1 1]);
-fespace_p = create_fespace(mesh,'P1',[]);
+fespace_u = create_fespace(mesh,'P3',[1 0 1 0 1 1]);
+fespace_p = create_fespace(mesh,'P2',[]);
 
 n_nodes_u = size(fespace_u.nodes,1);
 
@@ -40,7 +39,6 @@ method.jac = J;
 method.tol = tol;
 method.maxit = maxit;
 method.x0 = x0;
-save('workspace_exsol');
 [sol,err,it] = solve_fluid_system(A,b,fespace_u,fespace_p,method);
 % [sol,err,it] = solve_fluid_system(A,b,fespace_u,fespace_p);
 
