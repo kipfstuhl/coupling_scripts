@@ -4,7 +4,7 @@ clc
 load('solutions/exsol.mat');
 exsol = sol;
 
-for i = 1:6
+for i = [1 11]
     disp(['Interpolating on refinement ',num2str(i)]);
     mesh_in = read_mesh(['../meshes/refinement',num2str(i),'/inflow_distorted.msh']);
     mesh_out1 = read_mesh(['../meshes/refinement',num2str(i),'/outflow1_distorted.msh']);
@@ -33,8 +33,9 @@ for i = 1:6
        u1s{j} = interp_on_fespace(exsol.fespace_u,exsol.u1,fespace_us{j});
        u2s{j} = interp_on_fespace(exsol.fespace_u,exsol.u2,fespace_us{j});
        ps{j} = interp_on_fespace(exsol.fespace_p,exsol.p,fespace_ps{j});
+       2 * numel(u1s{j}) + numel(ps{j})
     end
-    save(['solutions/u1s_ref',num2str(i),'.mat'],'u1s');
-    save(['solutions/u2s_ref',num2str(i),'.mat'],'u2s');
-    save(['solutions/ps_ref',num2str(i),'.mat'],'ps');
+%     save(['solutions/u1s_ref',num2str(i),'.mat'],'u1s');
+%     save(['solutions/u2s_ref',num2str(i),'.mat'],'u2s');
+%     save(['solutions/ps_ref',num2str(i),'.mat'],'ps');
 end

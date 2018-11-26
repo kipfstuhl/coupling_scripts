@@ -1,4 +1,5 @@
-lc = .04036302793217836821;
+SetFactory("OpenCASCADE");
+lc = .022;
 // lc = 0.192;
 
 r = 0.5;
