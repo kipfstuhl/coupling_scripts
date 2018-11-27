@@ -22,7 +22,7 @@ The functions of *feamat* must be beforehand included by running the run_addpath
 
 License
 -------------------------
-For the licensing, we refer to the LICENSE FILE
+For the licensing, we refer to the LICENSE file
 
 Note about the version
 -------------------------
