@@ -14,7 +14,7 @@ to recursively clone the directory and *feamat*.
 
 Installation of GeoPDEs
 -------------------------
-GeoPDEs can be downloaded from the following link: http://rafavzqz.github.io/geopdes/download/. After downloading, decompress the compressed package to a location of your choice and edit the 'geopdes_location' string in the run_addpaths.m script.
+GeoPDEs can be downloaded from the following link: http://rafavzqz.github.io/geopdes/download/. After downloading, decompress the compressed package to a location of your choice and edit the 'geopdes_location' string in the run_addpaths.m script. The tested version of GeoPDEs is 3.1.0.
 
 How to use
 -------------------------
